@@ -22,7 +22,7 @@ jobs:
       # Hoisted so the `if:` guards below can detect whether Sonar is configured.
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           # SonarQube needs full history for accurate new-code detection.
           fetch-depth: 0
@@ -67,7 +67,7 @@ jobs:
     name: Dependency Audit
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
