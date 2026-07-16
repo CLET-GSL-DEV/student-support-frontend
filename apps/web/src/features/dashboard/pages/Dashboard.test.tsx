@@ -38,7 +38,7 @@ function renderDashboard() {
 }
 
 describe('Dashboard', () => {
-  it('renders entry points for every configuration area', () => {
+  it('renders quick actions for every admin area by default', () => {
     renderDashboard();
 
     for (const label of [
@@ -48,15 +48,23 @@ describe('Dashboard', () => {
       'Hostel Allocation',
       'Admissions Workflow',
       'Release Governance',
+      'Audit Log',
     ]) {
-      expect(screen.getByText(label)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: label })).toBeInTheDocument();
     }
   });
 
   it('renders aggregate metrics from the analytics repository', async () => {
     renderDashboard();
 
-    expect(await screen.findByText('Active students')).toBeInTheDocument();
-    expect(screen.getByText('Scholarship applications')).toBeInTheDocument();
+    expect(await screen.findByText('Notifications delivered')).toBeInTheDocument();
+    expect(await screen.findByText('Scholarship applications')).toBeInTheDocument();
+  });
+
+  it('renders the aggregate analytics views', async () => {
+    renderDashboard();
+
+    expect(await screen.findByText('Module usage (last 30 days)')).toBeInTheDocument();
+    expect(screen.getByText('Weekly active students')).toBeInTheDocument();
   });
 });

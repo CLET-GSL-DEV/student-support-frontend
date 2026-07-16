@@ -1,12 +1,13 @@
 import { SectionDescription, SectionHeader, SectionTitle } from '@rfdtech/components';
 
-import { ConfigAreaGrid, MetricsSummary } from '../components';
+import { AnalyticsDetailSection, MetricsSummary, QuickActions } from '../components';
 
 /**
- * Admin Portal landing (SRS §2.3, §2.6): aggregate usage summary and entry
- * points into every configuration area. No individual student data appears
- * here or anywhere else in this portal. The S003 change history lives on
- * the Audit Log screen.
+ * Admin Portal landing (SRS §2.3, §2.6): aggregate usage summary, editable
+ * quick actions into the admin areas, and the aggregate analytics views
+ * (module usage, notification delivery, weekly active students). Everything
+ * here is aggregate only; no individual student data appears in this portal.
+ * The S003 change history lives on the Audit Log screen.
  */
 export function Component() {
   return (
@@ -14,11 +15,12 @@ export function Component() {
       <SectionHeader>
         <SectionTitle>Dashboard</SectionTitle>
         <SectionDescription>
-          Aggregate service overview and configuration entry points for GSL Student Support.
+          Aggregate service overview and quick access for GSL Student Support.
         </SectionDescription>
       </SectionHeader>
       <MetricsSummary />
-      <ConfigAreaGrid />
+      <QuickActions />
+      <AnalyticsDetailSection />
     </div>
   );
 }

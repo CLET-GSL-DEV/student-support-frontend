@@ -61,10 +61,6 @@ export const router = createBrowserRouter([
             lazy: () => import('@/features/admissions-workflow/pages/AdmissionsWorkflowPage'),
           },
           {
-            path: ROUTES.ANALYTICS,
-            lazy: () => import('@/features/analytics/pages/AnalyticsPage'),
-          },
-          {
             path: ROUTES.AUDIT_LOG,
             lazy: () => import('@/features/audit-log/pages/AuditLogPage'),
           },

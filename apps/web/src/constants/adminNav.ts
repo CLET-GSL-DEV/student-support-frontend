@@ -1,5 +1,4 @@
 import {
-  Activity,
   BellRing,
   Building2,
   GraduationCap,
@@ -61,13 +60,6 @@ export const ADMIN_AREA_NAV: readonly AdminAreaNavItem[] = [
     route: ROUTES.ADMISSIONS_WORKFLOW,
     icon: Workflow,
     description: 'Applicant-facing SA.01 status workflow shown during admissions',
-  },
-  {
-    area: ADMIN_AREAS.ANALYTICS,
-    label: ADMIN_AREA_LABELS[ADMIN_AREAS.ANALYTICS],
-    route: ROUTES.ANALYTICS,
-    icon: Activity,
-    description: 'Aggregate usage across the student app, no individual data',
   },
   {
     area: ADMIN_AREAS.AUDIT,

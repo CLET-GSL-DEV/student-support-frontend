@@ -18,7 +18,6 @@ export const ROUTES = {
   WELFARE_ROUTING: '/welfare-routing',
   HOSTEL_RULES: '/hostel-rules',
   ADMISSIONS_WORKFLOW: '/admissions-workflow',
-  ANALYTICS: '/analytics',
   AUDIT_LOG: '/audit-log',
   RELEASES: '/releases',
 } as const;
