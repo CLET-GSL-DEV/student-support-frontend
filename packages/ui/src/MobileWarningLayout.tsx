@@ -8,8 +8,8 @@ export function MobileWarningLayout() {
         <div className="flex-[0.5]" />
         <div className="flex-[2] min-w-full flex flex-col items-center justify-center">
           <div className="flex flex-col items-center justify-center">
-            <img src="/evs-logo.png" alt="EVS" className="size-28 mx-auto" />
-            <span className="text-xl font-bold text-foreground/50">EVS</span>
+            <img src="/clet_logo.png" alt="GSL Student Support" className="size-28 mx-auto" />
+            <span className="text-xl font-bold text-foreground/50">GSL Student Support</span>
           </div>
 
           <Card className="flex-1 w-full translate-y-10 pt-20! text-center relative">
@@ -18,8 +18,8 @@ export function MobileWarningLayout() {
               <TriangleAlert className="opacity-80" />
             </h1>
             <p className="text-sm text-foreground-muted leading-relaxed max-w-xs mx-auto">
-              The EVS platform is best viewed on a tablet or desktop. Please switch to a larger
-              device for the full experience.
+              The GSL Student Support platform is best viewed on a tablet or desktop. Please switch
+              to a larger device for the full experience.
             </p>
 
             <TabletSmartphone className="absolute left-1/2 -translate-x-1/2 bottom-12 size-32 text-foreground-muted/10" />

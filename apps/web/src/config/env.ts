@@ -31,7 +31,7 @@ const serviceBaseUrl = (defaultPath: string) =>
     );
 
 const envSchema = z.object({
-  // App/EVS service base URL — the default for every module's endpoints.
+  // App/Student Support service base URL — the default for every module's endpoints.
   VITE_API_URL: serviceBaseUrl('/api/app'),
   // IAM service base URL — `/me` session check, admin users/roles, invitations.
   VITE_IAM_URL: serviceBaseUrl('/api/iam'),
@@ -50,6 +50,14 @@ const envSchema = z.object({
   // Optional ZITADEL project id. When set, the project is added to the token
   // audience; the project-roles claim `hasRole` reads is requested regardless.
   VITE_ZITADEL_PROJECT_ID: z.string().default(''),
+  // Frontend-only delivery switches for the Admin Portal data layer. Every
+  // backend path sits behind a repository interface; 'mock' serves dummy data,
+  // 'api' routes through the gateway client stubs (see src/data/dataSource.ts).
+  VITE_ADMIN_DATA_SOURCE: z.enum(['mock', 'api']).default('mock'),
+  // Initial mock scenario for every mock repository: 'populated' seeds dummy
+  // data, 'empty' returns empty collections, 'error' makes calls fail, so
+  // loading/empty/error states are exercisable without a backend.
+  VITE_ADMIN_MOCK_SCENARIO: z.enum(['populated', 'empty', 'error']).default('populated'),
 });
 
 const parsed = createEnv(envSchema, import.meta.env);
@@ -67,4 +75,6 @@ export const env = {
     postLogoutRedirectUri: parsed.VITE_ZITADEL_POST_LOGOUT_URI,
     projectId: parsed.VITE_ZITADEL_PROJECT_ID,
   },
+  adminDataSource: parsed.VITE_ADMIN_DATA_SOURCE,
+  adminMockScenario: parsed.VITE_ADMIN_MOCK_SCENARIO,
 } as const;

@@ -1,6 +1,6 @@
 /* Login/landing hero layout. Component styling comes from @rfdtech/components;
    these rules are page layout only. `/login-hero.avif` is a plain public-root
-   reference (like `/evs-logo.png` below) — every consuming app must have that
+   reference (like `/clet_logo.png` below) — every consuming app must have that
    file in its own `public/` folder. */
 .landing {
   display: flex;

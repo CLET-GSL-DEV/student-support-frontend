@@ -15,7 +15,7 @@
    ```
 4. Commit using **Conventional Commits** — commitlint runs on `commit-msg`:
    ```
-   feat(admin-portal): add user management page
+   feat(web): add user management page
    fix(api-client): retry refresh only once per request
    chore(deps): bump vite to 8.1
    ```
@@ -33,8 +33,8 @@ Installed automatically via `pnpm install` (Husky `prepare` script):
 
 ## Where things go
 
-- App-specific UI/state/routes → `apps/<portal>/src/features/*`
-- Anything shared by 2+ portals → a `packages/*` package (see README "Adding a shared package")
+- App-specific UI/state/routes → `apps/<app>/src/features/*`
+- Anything shared by 2+ apps → a `packages/*` package (see `ARCHITECTURE.md`'s "Multi-app usage")
 - Client state → app-local Zustand store under `src/stores/*`, imported via the `@/stores` barrel
 - Server state → declarative endpoints (`GET`/`POST`/...) in `packages/api-client`, consumed via
   `useQueryEndpoint`/`useMutationEndpoint` (see `ARCHITECTURE.md`)

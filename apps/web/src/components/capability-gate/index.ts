@@ -1,0 +1,1 @@
+export { CapabilityGate } from './CapabilityGate';

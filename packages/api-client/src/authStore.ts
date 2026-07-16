@@ -3,7 +3,7 @@
  * sessionStorage — keeping the access token in JS memory only removes it as an
  * XSS exfiltration target.
  *
- * The token itself is produced by the auth layer (e.g. `@evs/auth`, which runs
+ * The token itself is produced by the auth layer (e.g. `@starter/auth`, which runs
  * the OIDC/PKCE flow with an in-memory userStore + `offline_access` refresh
  * token). That layer feeds the token in via `setToken` and wires the optional
  * `refreshHandler` / `authErrorHandler` so `createApiClient` can silently renew

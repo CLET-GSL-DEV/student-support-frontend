@@ -3,7 +3,7 @@ import { create } from 'zustand';
 import type { ParsedRole } from './roles';
 
 /**
- * Display/freshness profile for the signed-in user — mirrors the EVS backend
+ * Display/freshness profile for the signed-in user — mirrors the Student Support backend
  * `/me` response, not ZITADEL's token claims. Purely informational (e.g. a
  * name/role badge in the header); it does NOT drive authorization. Route and
  * component guarding both read `useAuth().hasRole()` (ZITADEL) instead, so

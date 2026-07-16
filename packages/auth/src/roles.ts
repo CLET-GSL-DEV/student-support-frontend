@@ -1,5 +1,5 @@
 /**
- * EVS role identity.
+ * GSL Student Support role identity.
  *
  * Access control is role-membership only (`hasRole` / `AccessGate`) — there is
  * deliberately no module-access bitmask here. The single-app codebase had a
@@ -9,7 +9,7 @@
  */
 
 /**
- * IAM/EVS platform roles the application recognises.
+ * IAM/GSL Student Support platform roles the application recognises.
  *
  * These slugs are the EXACT ZITADEL project-role keys — `useAuth().hasRole()`
  * does a raw `hasOwnProperty` lookup on the token's project-roles claim (no
@@ -47,7 +47,7 @@ export interface ParsedRole {
 }
 
 /**
- * Alternate role spellings seen from IAM / the EVS backend seeds, mapped to
+ * Alternate role spellings seen from IAM / the Student Support backend seeds, mapped to
  * the canonical `ROLES` slug.
  */
 const ROLE_ALIASES: Record<string, string> = {
@@ -149,7 +149,7 @@ export function formatRoleLabel(role: string): string {
  * Filter raw IAM platform roles down to the ones the system actually grants
  * access to, then pick max 2: first found to primary, second to secondary. IAM
  * may return extra roles (e.g. "default-roles-clet-internal", "offline_access")
- * that are irrelevant to EVS — and `resolveRoleCode` cross-checks every entry
+ * that are irrelevant to GSL Student Support — and `resolveRoleCode` cross-checks every entry
  * (and its alias target) against the accessible-roles set, so nothing unknown
  * survives to become a primary/secondary role.
  */

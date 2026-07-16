@@ -31,10 +31,10 @@ function useIsMobile() {
 }
 
 /**
- * Shared app shell used by every EVS portal. Handles:
+ * Shared app shell used by every GSL Student Support portal. Handles:
  * - Mobile warning (redirects to <MobileWarningLayout /> below 768px)
  * - Stacked layout shell (full-width header + sidebar + content)
- * - Header branding (EVS logo + portal name)
+ * - Header branding (GSL Student Support logo + portal name)
  * - Header actions (app switcher, notifications, profile — theme toggle is
  *   built into ProfilePopover, no hand-rolled header button needed)
  * - Sidebar with app-specific nav
@@ -51,8 +51,8 @@ export function AppShell({ subtitle, sidebar, appSwitcher, notifications }: AppS
     <AppLayout variant="stacked">
       <AppHeader variant="plain">
         <AppHeaderBranding
-          logo={<img src="/evs-logo.png" alt="" width={28} height={28} />}
-          title="EVS"
+          logo={<img src="/clet_logo.png" alt="" width={28} height={28} />}
+          title="GSL Student Support"
           subtitle={subtitle}
         />
         <AppHeaderActions>

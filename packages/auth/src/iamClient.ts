@@ -33,18 +33,18 @@ function isEnvelope(body: unknown): body is IamEnvelope {
 }
 
 /**
- * The IAM axios instance. Separate from the app's EVS client because IAM is a
+ * The IAM axios instance. Separate from the app's Student Support client because IAM is a
  * separate service (`CLET-GSL-DEV/iam-3.0`) on its own base URL — the `/me`
  * profile, admin user/role administration and invitations all live there, and
- * none of those paths exist on the EVS backend.
+ * none of those paths exist on the Student Support backend.
  *
- * Shares the same in-memory `authStore` as the EVS client, so both send the
+ * Shares the same in-memory `authStore` as the Student Support client, so both send the
  * current access token and both defer to the same silent-renew / re-login
  * handlers wired by `AuthTokenBridge`.
  *
  * The extra response interceptor unwraps IAM's `{ success, message, data }`
  * envelope, so `createService`/`useQueryEndpoint` hand callers the payload
- * rather than the wrapper. The EVS backend does not wrap, which is why this
+ * rather than the wrapper. The Student Support backend does not wrap, which is why this
  * lives here and not in `createApiClient`.
  */
 export function createIamClient(env: IamEnv): AxiosInstance {

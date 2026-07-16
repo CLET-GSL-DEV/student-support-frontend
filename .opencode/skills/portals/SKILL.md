@@ -6,7 +6,13 @@ description: |
   shared packages, or planning any future app/package restructuring.
 ---
 
-# EVS Portals — Architecture, Roles & Migration Methodology
+# Portals — Architecture, Roles & Migration Methodology (EVS historical record)
+
+> **Note:** this repo is now **GSL Student Support**. The "EVS" (Exams Verification System)
+> references below are historical — they describe the predecessor system this codebase was copied
+> from, whose migration produced the auth/ui packages carried forward here. The current SRS for this
+> project is `C3_S028_Student_App_SRS_v1.0.pdf` at the repo root; the EVS SRS referenced below
+> applies only to that historical record.
 
 ## What this is
 

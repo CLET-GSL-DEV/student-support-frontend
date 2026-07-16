@@ -44,10 +44,10 @@ npm pack
 
 # 3. Copy fresh tgz to this repo's vendor
 cp ~/mm/gsl-components/rfdtech-components-2.0.0.tgz \
-   ~/mm/starter/vendor/rfdtech-components-2.0.0.tgz
+   ~/development/Websites/student-support-frontend/vendor/rfdtech-components-2.0.0.tgz
 
 # 4. Wipe + reinstall
-cd ~/mm/starter
+cd ~/development/Websites/student-support-frontend
 rm -rf node_modules
 pnpm install
 
@@ -60,8 +60,8 @@ pnpm typecheck --filter @starter/web
 
 ```bash
 cd ~/mm/gsl-components && npm run build && npm pack && \
-  cp rfdtech-components-2.0.0.tgz ~/mm/starter/vendor/ && \
-  cd ~/mm/starter && rm -rf node_modules && pnpm install
+  cp rfdtech-components-2.0.0.tgz ~/development/Websites/student-support-frontend/vendor/ && \
+  cd ~/development/Websites/student-support-frontend && rm -rf node_modules && pnpm install
 ```
 
 ## Notes
