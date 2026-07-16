@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  '@rfdtech/components@2.0.1': 0a9e72e6f25b1629ebc7347e77cce94f56f10a94bed82d904c8b1f354eafe066
+
 importers:
 
   .:
@@ -49,7 +52,7 @@ importers:
         version: 5.4.0(react-hook-form@7.81.0(react@19.2.7))
       '@rfdtech/components':
         specifier: ^2.0.1
-        version: 2.0.1(d074ed553ca38343e527871d77a956d5)
+        version: 2.0.1(patch_hash=0a9e72e6f25b1629ebc7347e77cce94f56f10a94bed82d904c8b1f354eafe066)(d074ed553ca38343e527871d77a956d5)
       '@starter/api-client':
         specifier: workspace:*
         version: link:../../packages/api-client
@@ -174,7 +177,7 @@ importers:
     devDependencies:
       '@rfdtech/components':
         specifier: ^2.0.1
-        version: 2.0.1(d074ed553ca38343e527871d77a956d5)
+        version: 2.0.1(patch_hash=0a9e72e6f25b1629ebc7347e77cce94f56f10a94bed82d904c8b1f354eafe066)(d074ed553ca38343e527871d77a956d5)
       '@starter/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
@@ -223,7 +226,7 @@ importers:
     devDependencies:
       '@rfdtech/components':
         specifier: ^2.0.1
-        version: 2.0.1(d074ed553ca38343e527871d77a956d5)
+        version: 2.0.1(patch_hash=0a9e72e6f25b1629ebc7347e77cce94f56f10a94bed82d904c8b1f354eafe066)(d074ed553ca38343e527871d77a956d5)
       '@starter/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
@@ -361,7 +364,7 @@ importers:
     devDependencies:
       '@rfdtech/components':
         specifier: ^2.0.1
-        version: 2.0.1(d074ed553ca38343e527871d77a956d5)
+        version: 2.0.1(patch_hash=0a9e72e6f25b1629ebc7347e77cce94f56f10a94bed82d904c8b1f354eafe066)(d074ed553ca38343e527871d77a956d5)
       '@starter/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
@@ -4478,7 +4481,7 @@ snapshots:
 
   '@radix-ui/rect@1.1.2': {}
 
-  '@rfdtech/components@2.0.1(d074ed553ca38343e527871d77a956d5)':
+  '@rfdtech/components@2.0.1(patch_hash=0a9e72e6f25b1629ebc7347e77cce94f56f10a94bed82d904c8b1f354eafe066)(d074ed553ca38343e527871d77a956d5)':
     dependencies:
       '@dnd-kit/core': 6.3.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@dnd-kit/sortable': 10.0.0(@dnd-kit/core@6.3.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(react@19.2.7)

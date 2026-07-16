@@ -1,8 +1,8 @@
 {
   "mcpServers": {
     "rfdtech-ui": {
-      "command": "node",
-      "args": ["apps/web/node_modules/@rfdtech/components/dist/mcp/index.js"]
+      "command": "npx",
+      "args": ["-y", "@rfdtech/components-mcp"]
     }
   }
 }

@@ -3,7 +3,7 @@
   "mcp": {
     "rfdtech-ui": {
       "type": "local",
-      "command": ["node", "apps/web/node_modules/@rfdtech/components/dist/mcp/index.js"],
+      "command": ["npx", "-y", "@rfdtech/components-mcp"],
       "enabled": true
     }
   }

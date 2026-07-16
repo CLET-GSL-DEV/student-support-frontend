@@ -13,3 +13,6 @@ minimumReleaseAgeExclude:
 onlyBuiltDependencies:
   - esbuild
   - '@rfdtech/components'
+
+patchedDependencies:
+  '@rfdtech/components@2.0.1': patches/@rfdtech__components@2.0.1.patch
