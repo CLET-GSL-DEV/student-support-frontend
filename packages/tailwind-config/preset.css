@@ -1,0 +1,13 @@
+/**
+ * Full Tailwind preset for starter apps. Import a single line in an app's index.css:
+ *   @import '@starter/tailwind-config/preset.css';
+ * It pulls in Tailwind itself, the @rfdtech/components base stylesheet, and the shared
+ * design tokens, then tells Tailwind to scan the shared UI/auth packages for class names
+ * so their utility classes are not purged.
+ */
+@import 'tailwindcss';
+@import '@rfdtech/components/style.css';
+@import './theme.css';
+
+@source '../ui/src/**/*.{ts,tsx}';
+@source '../auth/src/**/*.{ts,tsx}';

@@ -1,0 +1,27 @@
+{
+  "name": "@starter/utils",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "types": "./src/index.ts",
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --coverage",
+    "clean": "rm -rf .turbo node_modules coverage"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1"
+  },
+  "devDependencies": {
+    "@starter/eslint-config": "workspace:*",
+    "@starter/tsconfig": "workspace:*",
+    "@vitest/coverage-v8": "^4.1.9",
+    "eslint": "^10.5.0",
+    "typescript": "~6.0.2",
+    "vitest": "^4.1.9"
+  }
+}

@@ -1,0 +1,128 @@
+/* Login/landing hero layout. Component styling comes from @rfdtech/components;
+   these rules are page layout only. `/login-hero.avif` is a plain public-root
+   reference (like `/evs-logo.png` below) — every consuming app must have that
+   file in its own `public/` folder. */
+.landing {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Left: full-bleed imagery. Takes the remaining space after the fixed-width
+   sign-in panel. */
+.landing__media {
+  position: relative;
+  flex: 1 1 auto;
+  background-image: url('/login-hero.avif');
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+/* Dark gradient fading in toward the bottom of the image, so the caption
+   below stays legible. */
+.landing__media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 20%,
+    rgba(0, 0, 0, 0.55) 55%,
+    rgba(0, 0, 0, 0.95) 100%
+  );
+  pointer-events: none;
+}
+
+.landing__caption {
+  position: absolute;
+  left: 3rem;
+  bottom: 3rem;
+  z-index: 1;
+  color: #fff;
+}
+
+.landing__eyebrow {
+  margin: 0 0 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.85;
+  color: #d3af37;
+}
+
+.landing__title {
+  margin: 0;
+  font-size: 2.3rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #fff;
+}
+
+/* Right: the sign-in panel — a fixed, narrower column, plain (no card). */
+.landing__panel {
+  flex: 0 0 480px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: var(--gsl-bg, #fff);
+}
+
+.landing__content {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.landing__logo {
+  width: 104px;
+  height: 104px;
+  object-fit: contain;
+  margin-bottom: 1.5rem;
+  margin-left: -1rem;
+}
+
+.landing__heading {
+  margin: 0 0 0.75rem;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--gsl-text);
+}
+
+.landing__desc {
+  width: 100%;
+  margin: 0 0 2rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--gsl-text-secondary);
+}
+
+/* Institutional navy CTA (matches the seal), overriding the GSL red primary
+   just for this public front-door hero. */
+.landing__signin {
+  background: #0b1f3d;
+}
+
+.landing__note {
+  width: 100%;
+  margin: 1.5rem 0 0;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  text-align: center;
+  color: var(--gsl-text-muted);
+}
+
+/* Collapse to a single column on narrow screens — drop the image panel and
+   let the sign-in panel fill the width. */
+@media (max-width: 768px) {
+  .landing__media {
+    display: none;
+  }
+
+  .landing__panel {
+    flex: 1 1 auto;
+  }
+}

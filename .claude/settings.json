@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git rm *)",
+      "Bash(pnpm install *)",
+      "Bash(pnpm typecheck *)",
+      "Bash(pnpm lint *)",
+      "Bash(pnpm test *)",
+      "Bash(perl -0pi -e 's/\\\\brender\\\\\\(\\\\n\\(\\\\s*<ProtectedRoute\\)/renderInRouter\\(\\\\n$1/g' packages/auth/src/ProtectedRoute.test.tsx)",
+      "Bash(pnpm build *)",
+      "Bash(grep -vE \"^\\\\s*$\")",
+      "Bash(pnpm format *)",
+      "Bash(echo \"lint: $?\")",
+      "Bash(echo \"typecheck: $?\")",
+      "Bash(pnpm --filter @starter/auth test)",
+      "Bash(echo \"test: $?\")",
+      "Bash(pnpm format:check)",
+      "Bash(echo \"format:check: $?\")",
+      "Bash(pnpm --filter @starter/web build)",
+      "Bash(pnpm turbo *)"
+    ]
+  }
+}

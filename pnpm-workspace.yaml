@@ -1,0 +1,15 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+
+allowBuilds:
+  '@rfdtech/components': true
+
+minimumReleaseAgeExclude:
+  - '@rfdtech/components@2.0.1'
+
+# Allow only trusted dependencies to run install/build scripts (pnpm 11+).
+# @rfdtech/components' postinstall wires its MCP dev-tooling (component search, etc.).
+onlyBuiltDependencies:
+  - esbuild
+  - '@rfdtech/components'

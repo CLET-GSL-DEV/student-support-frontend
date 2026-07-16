@@ -1,0 +1,9 @@
+# Default owners for everything in the repo.
+# Replace with your GitHub team, e.g. @rfdtech/frontend-platform.
+*                      @rfdtech/frontend-platform
+
+# Shared packages have a higher blast radius — require platform review.
+/packages/             @rfdtech/frontend-platform
+/.github/              @rfdtech/frontend-platform
+/turbo.json            @rfdtech/frontend-platform
+/pnpm-workspace.yaml   @rfdtech/frontend-platform

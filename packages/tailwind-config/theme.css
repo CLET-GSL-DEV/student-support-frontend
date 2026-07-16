@@ -1,0 +1,171 @@
+/**
+ * Shared design tokens for starter apps, layered on top of @rfdtech/components'
+ * own token system (`--gsl-*` variables + the `data-gsl-theme` attribute — set
+ * by the component library, not app-specific). Only override `--gsl-*` values
+ * and add app-level `--brand-*` aliases here; do not rename the `--gsl-*`
+ * variables themselves, they are the component library's contract.
+ */
+:root,
+:root[data-gsl-theme='light'],
+.gsl-theme[data-gsl-theme='light'] {
+  /* Brand */
+  --gsl-primary: #083755;
+  --gsl-primary-light: #e3edf3;
+  --brand-primary: #083755;
+  --brand-primary-dark: #062b44;
+  --brand-accent: #0d9488;
+  --brand-accent-dark: #0f766e;
+  --brand-action: var(--brand-primary);
+  --brand-action-light: color-mix(in srgb, var(--brand-action) 12%, transparent);
+
+  /* Surfaces */
+  --brand-background: #f8fafc;
+  --brand-surface: #ffffff;
+  --brand-surface-subtle: #f1f5f9;
+  --brand-surface-muted: #e2e8f0;
+
+  /* Text */
+  --brand-foreground: var(--brand-primary);
+  --brand-foreground-secondary: #475569;
+  --brand-foreground-muted: #64748b;
+  --brand-on-primary: #ffffff;
+  --brand-on-accent: #ffffff;
+
+  /* Borders & interaction */
+  --brand-border: #e2e8f0;
+  --brand-border-strong: #cbd5e1;
+  --brand-hover: var(--brand-surface-subtle);
+  --brand-focus: var(--brand-accent);
+  --brand-overlay: rgba(15, 23, 42, 0.45);
+}
+
+/* Dark mode overrides */
+:root[data-gsl-theme='dark'],
+.gsl-theme[data-gsl-theme='dark'] {
+  --gsl-primary: #4a7fa8;
+  --gsl-primary-light: #16232e;
+  --brand-primary: #083755;
+  --brand-primary-dark: #062b44;
+  --brand-accent: #14b8a6;
+  --brand-accent-dark: #0d9488;
+  --brand-action: var(--brand-primary);
+  --brand-action-light: color-mix(in srgb, var(--brand-action) 12%, transparent);
+
+  --brand-background: var(--brand-primary);
+  --brand-surface: #1e293b;
+  --brand-surface-subtle: #334155;
+  --brand-surface-muted: #475569;
+
+  --brand-foreground: #f8fafc;
+  --brand-foreground-secondary: #cbd5e1;
+  --brand-foreground-muted: #94a3b8;
+  --brand-on-primary: #ffffff;
+  --brand-on-accent: #ffffff;
+
+  --brand-border: #475569;
+  --brand-border-strong: #64748b;
+  --brand-hover: var(--brand-surface-subtle);
+  --brand-focus: var(--brand-accent);
+  --brand-overlay: rgba(2, 6, 23, 0.72);
+}
+
+/* Standard theme tokens (--color-background, --color-foreground, etc.) are
+   provided by @rfdtech/components' tokens.css. Only app-level aliases here. */
+@theme {
+  --color-surface: var(--gsl-bg);
+  --color-surface-subtle: var(--gsl-surface-subtle);
+  --color-surface-muted: var(--gsl-surface-dark);
+
+  --color-foreground-secondary: var(--gsl-text-secondary);
+  --color-foreground-muted: var(--gsl-text-muted);
+
+  --color-primary-light: var(--gsl-primary-light);
+  --color-brand: var(--brand-primary);
+  --color-accent: var(--brand-accent);
+  --color-accent-dark: var(--brand-accent-dark);
+
+  --color-border-strong: var(--gsl-border-strong);
+  --color-hover: var(--gsl-hover);
+  --color-focus: var(--gsl-focus);
+
+  --color-success-bg: var(--gsl-success-bg);
+  --color-warning-bg: var(--gsl-warning-bg);
+  --color-error: var(--gsl-error);
+  --color-error-bg: var(--gsl-error-bg);
+}
+
+/**
+ * Radial brand wash used behind full-bleed login screens (see `LoginScreen`
+ * in `@starter/auth`).
+ */
+@utility landing-overlay {
+  background: radial-gradient(
+    ellipse 120% 150% at right bottom,
+    var(--gsl-primary) 40%,
+    color-mix(in srgb, var(--gsl-primary) 12%, transparent) 100%
+  );
+}
+
+@utility gap-body {
+  gap: var(--gsl-app-layout-body-gap);
+}
+
+@utility scrollbar-hidden {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@utility scroll-mask {
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    black 24px,
+    black calc(100% - 24px),
+    transparent 100%
+  );
+}
+
+@keyframes scale-in {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+html,
+body {
+  background-color: var(--gsl-page-bg);
+  color: var(--gsl-text);
+}
+
+.gsl-button--outline {
+  background: transparent;
+}
+
+.gsl-button--outline:hover:not(:disabled) {
+  background: var(--gsl-primary-light);
+}
+
+:root[data-gsl-theme='dark'] .gsl-button--outline,
+.gsl-theme[data-gsl-theme='dark'] .gsl-button--outline {
+  border-color: var(--gsl-border);
+  color: var(--gsl-text-secondary);
+}
+
+@utility centered {
+  @apply flex items-center justify-center;
+}
+
+@utility shadow-primary {
+  box-shadow: 0 4px 14px 0 color-mix(in srgb, var(--gsl-primary) 20%, transparent);
+}

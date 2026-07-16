@@ -1,0 +1,17 @@
+{
+  "name": "@starter/tailwind-config",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./theme.css": "./theme.css",
+    "./preset.css": "./preset.css"
+  },
+  "files": [
+    "theme.css",
+    "preset.css"
+  ],
+  "peerDependencies": {
+    "tailwindcss": "^4.0.0"
+  }
+}

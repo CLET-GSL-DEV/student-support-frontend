@@ -1,0 +1,19 @@
+# Security headers for static hosts that read _headers (Netlify, Cloudflare Pages).
+# Admin portals should be served only over HTTPS behind auth.
+#
+# NOTE: files in public/ are copied verbatim — Vite does NOT substitute %VITE_*% here
+# (unlike index.html's CSP meta tag, which a Vite plugin fills from the env).
+# Replace https://your-instance.zitadel.cloud below with your ZITADEL origin so the
+# browser allows OIDC discovery/token/refresh (connect-src) and the session iframe
+# (frame-src). Keep it in sync with VITE_ZITADEL_AUTHORITY.
+# If VITE_API_URL / VITE_IAM_URL are set to ABSOLUTE URLs (direct gateway calls
+# instead of same-origin paths), also add each gateway's bare origin to
+# connect-src below — this static header knows nothing about the env, so it
+# must be edited by hand to match.
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self' https://your-instance.zitadel.cloud; frame-src 'self' https://your-instance.zitadel.cloud; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()

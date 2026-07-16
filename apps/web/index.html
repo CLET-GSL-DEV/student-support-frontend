@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!--
+      __API_CSP_ORIGINS__ is replaced with the deduped bare origins of
+      VITE_API_URL and VITE_IAM_URL (only those set to absolute URLs — the
+      services may share a gateway or live on separate hosts) by the same
+      Vite plugin — needed in connect-src since the app calls those backends
+      directly when the URLs are absolute (no Vite dev-server proxy).
+      Relative values are same-origin and contribute nothing.
+
+      __ZITADEL_ORIGIN__ is replaced with VITE_ZITADEL_AUTHORITY (plus
+      VITE_ZITADEL_LOGIN_UI_ORIGIN, if the deployment serves ZITADEL's
+      interactive login UI on a separate origin) by a Vite plugin (see
+      vite.config.ts). These origins must be allowed in connect-src (OIDC
+      discovery / token / refresh) and frame-src (the monitorSession
+      check-session iframe, and the login-UI redirect during silent renew).
+      Falls back to empty when both envs are unset.
+
+      __DEV_CSP_EXTRA__ is replaced with 'unsafe-eval' in `vite dev` only (never in
+      a production build) — some dependency's dev-mode code path needs it. See
+      vite.config.ts's `zitadelCsp` plugin.
+    -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' __DEV_CSP_EXTRA__; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self' __API_CSP_ORIGINS__ __ZITADEL_ORIGIN__; frame-src 'self' __ZITADEL_ORIGIN__; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"
+    />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <title>Starter · Web</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
