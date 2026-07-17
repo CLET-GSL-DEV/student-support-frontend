@@ -11,6 +11,10 @@ on:
 permissions:
   contents: read
   security-events: write
+  # codeql-action needs to read workflow-run metadata for its status
+  # reporting; without this the analyze step fails with "Resource not
+  # accessible by integration".
+  actions: read
 
 jobs:
   analyze:

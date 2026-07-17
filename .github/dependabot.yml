@@ -15,6 +15,11 @@ updates:
         update-types: [minor, patch]
     commit-message:
       prefix: 'chore(deps)'
+    ignore:
+      # Major bumps (framework and tooling rewrites) are deliberate migration
+      # work, not drive-by merges; take them manually when planned.
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
 
   - package-ecosystem: github-actions
     directory: '/'
