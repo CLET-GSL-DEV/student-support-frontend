@@ -17,7 +17,9 @@ export class MockScenarioError extends Error {
   }
 }
 
-const MOCK_LATENCY_MS = 350;
+// Near-zero under vitest so repository invariant tests stay fast; the
+// visible-loading-state latency only matters in a browser.
+const MOCK_LATENCY_MS = import.meta.env.MODE === 'test' ? 5 : 350;
 
 /** Simulated network latency so loading states are actually visible. */
 export function mockDelay(): Promise<void> {
