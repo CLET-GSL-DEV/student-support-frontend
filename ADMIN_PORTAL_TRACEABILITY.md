@@ -32,9 +32,9 @@ as real contracts land.
   `CapabilityGate` over the `ROLE_CAPABILITIES` model (`constants/admin.ts`). The aggregate
   analytics views live on the dashboard landing behind the app-level role gate.
 - **States**: every data surface handles loading (component `loading` props / `PageSkeleton`), error
-  (`QueryErrorNotice` with retry), and empty (`emptyText` / info notices). The shared
-  unsaved-changes pattern (`useUnsavedChanges` + `UnsavedChangesDialog`) exists for full-page forms;
-  current editing is modal-scoped (dirty-close confirmation is a SPEC gap below).
+  (`QueryErrorNotice` with retry), and empty (`emptyText` / info notices). Unsaved changes are
+  guarded at both levels: `useUnsavedChanges` + `UnsavedChangesDialog` for full-page forms, and
+  `useDirtyClose` on every form modal (closing a dirty modal asks before discarding).
 - **Accessibility**: composed entirely from the WCAG-audited design system; custom compositions
   carry `aria-label`s and `aria-hidden` decorative icons.
 
@@ -52,7 +52,6 @@ as real contracts land.
 | 8   | Hostel allocation rule schema: applicant groups, strategies (S120-owned)                                                            | `types/hostelRules.ts`, `features/hostel-rules/forms/rule-form.ts`                       |
 | 9   | Whether the admin may add/remove workflow stages; B-01 "Admitted" vs "Enrolled" terminal-state inconsistency (Enrolled used)        | `types/admissionsWorkflow.ts`, `data/admissionsWorkflow/mock.ts`                         |
 | 10  | Release workflow detail (states beyond the governance gates); release metadata fields; DG approver identity source                  | `types/releases.ts`, `features/releases/forms/release-form.ts`, `data/releases/mock.ts`  |
-| 11  | Modal dirty-close confirmation (route-level unsaved guard exists; modal-scoped forms close without warning)                         | `hooks/useUnsavedChanges.ts`, all form modals                                            |
 
 ## // TODO(integration) seams
 

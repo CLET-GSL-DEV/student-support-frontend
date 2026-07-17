@@ -13,6 +13,7 @@ import {
   ModalTitle,
 } from '@rfdtech/components';
 
+import { useDirtyClose } from '@/components/dirty-close';
 import { QUICK_ACTIONS } from '@/constants/quickActions';
 
 interface QuickActionsEditModalProps {
@@ -31,6 +32,9 @@ export function QuickActionsEditModal({
 }: QuickActionsEditModalProps) {
   const [draft, setDraft] = useState<string[]>(selected);
 
+  const isDirty = draft.length !== selected.length || draft.some((id) => !selected.includes(id));
+  const dirtyClose = useDirtyClose(isDirty, onOpenChange);
+
   function toggle(actionId: string, checked: boolean) {
     setDraft((current) =>
       checked ? [...current, actionId] : current.filter((value) => value !== actionId),
@@ -43,7 +47,7 @@ export function QuickActionsEditModal({
   }
 
   return (
-    <Modal open={open} onOpenChange={onOpenChange}>
+    <Modal open={open} onOpenChange={dirtyClose.handleOpenChange}>
       <ModalPortal>
         <ModalOverlay />
         <ModalContent showCloseButton size="sm">
@@ -63,13 +67,18 @@ export function QuickActionsEditModal({
             </div>
           </ModalBody>
           <ModalFooter>
-            <Button variant="ghost" type="button" onClick={() => onOpenChange(false)}>
+            <Button
+              variant="ghost"
+              type="button"
+              onClick={() => dirtyClose.handleOpenChange(false)}
+            >
               Cancel
             </Button>
             <Button variant="primary" type="button" onClick={handleSave}>
               Save
             </Button>
           </ModalFooter>
+          {dirtyClose.dialog}
         </ModalContent>
       </ModalPortal>
     </Modal>

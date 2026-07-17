@@ -24,6 +24,7 @@ import {
   Textarea,
 } from '@rfdtech/components';
 
+import { useDirtyClose } from '@/components/dirty-close';
 import { PLATFORMS, PLATFORM_LABELS } from '@/types/releases';
 
 import { type ReleaseFormValues, releaseFormSchema } from '../forms';
@@ -46,6 +47,8 @@ export function ReleaseModal({ open, onOpenChange, onSubmit }: ReleaseModalProps
     },
   });
 
+  const dirtyClose = useDirtyClose(form.formState.isDirty, onOpenChange);
+
   const handleSubmit = async (values: ReleaseFormValues) => {
     try {
       await onSubmit(values);
@@ -58,7 +61,7 @@ export function ReleaseModal({ open, onOpenChange, onSubmit }: ReleaseModalProps
   };
 
   return (
-    <Modal open={open} onOpenChange={onOpenChange}>
+    <Modal open={open} onOpenChange={dirtyClose.handleOpenChange}>
       <ModalPortal>
         <ModalOverlay />
         <ModalContent showCloseButton size="md">
@@ -147,7 +150,11 @@ export function ReleaseModal({ open, onOpenChange, onSubmit }: ReleaseModalProps
               </div>
             </ModalBody>
             <ModalFooter>
-              <Button variant="ghost" type="button" onClick={() => onOpenChange(false)}>
+              <Button
+                variant="ghost"
+                type="button"
+                onClick={() => dirtyClose.handleOpenChange(false)}
+              >
                 Cancel
               </Button>
               <Button
@@ -161,6 +168,7 @@ export function ReleaseModal({ open, onOpenChange, onSubmit }: ReleaseModalProps
               </Button>
             </ModalFooter>
           </Form>
+          {dirtyClose.dialog}
         </ModalContent>
       </ModalPortal>
     </Modal>

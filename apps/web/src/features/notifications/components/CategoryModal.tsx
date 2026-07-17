@@ -24,6 +24,7 @@ import {
   Textarea,
 } from '@rfdtech/components';
 
+import { useDirtyClose } from '@/components/dirty-close';
 import type { NotificationCategory } from '@/types/notifications';
 
 import { type CategoryFormValues, categoryFormSchema } from '../forms';
@@ -48,6 +49,8 @@ export function CategoryModal({ open, onOpenChange, category, onSubmit }: Catego
     },
   });
 
+  const dirtyClose = useDirtyClose(form.formState.isDirty, onOpenChange);
+
   const handleSubmit = async (values: CategoryFormValues) => {
     try {
       await onSubmit(values);
@@ -60,7 +63,7 @@ export function CategoryModal({ open, onOpenChange, category, onSubmit }: Catego
   };
 
   return (
-    <Modal open={open} onOpenChange={onOpenChange}>
+    <Modal open={open} onOpenChange={dirtyClose.handleOpenChange}>
       <ModalPortal>
         <ModalOverlay />
         <ModalContent showCloseButton size="md">
@@ -128,7 +131,11 @@ export function CategoryModal({ open, onOpenChange, category, onSubmit }: Catego
               </div>
             </ModalBody>
             <ModalFooter>
-              <Button variant="ghost" type="button" onClick={() => onOpenChange(false)}>
+              <Button
+                variant="ghost"
+                type="button"
+                onClick={() => dirtyClose.handleOpenChange(false)}
+              >
                 Cancel
               </Button>
               <Button
@@ -142,6 +149,7 @@ export function CategoryModal({ open, onOpenChange, category, onSubmit }: Catego
               </Button>
             </ModalFooter>
           </Form>
+          {dirtyClose.dialog}
         </ModalContent>
       </ModalPortal>
     </Modal>

@@ -24,6 +24,7 @@ import {
   Notice,
 } from '@rfdtech/components';
 
+import { useDirtyClose } from '@/components/dirty-close';
 import {
   REFERRAL_CATEGORIES,
   REFERRAL_CATEGORY_LABELS,
@@ -66,6 +67,8 @@ export function RuleModal({ open, onOpenChange, rule, onSubmit }: RuleModalProps
     },
   });
 
+  const dirtyClose = useDirtyClose(form.formState.isDirty, onOpenChange);
+
   const handleSubmit = async (values: RuleFormValues) => {
     try {
       await onSubmit(values);
@@ -78,7 +81,7 @@ export function RuleModal({ open, onOpenChange, rule, onSubmit }: RuleModalProps
   };
 
   return (
-    <Modal open={open} onOpenChange={onOpenChange}>
+    <Modal open={open} onOpenChange={dirtyClose.handleOpenChange}>
       <ModalPortal>
         <ModalOverlay />
         <ModalContent showCloseButton size="md">
@@ -206,7 +209,11 @@ export function RuleModal({ open, onOpenChange, rule, onSubmit }: RuleModalProps
               </div>
             </ModalBody>
             <ModalFooter>
-              <Button variant="ghost" type="button" onClick={() => onOpenChange(false)}>
+              <Button
+                variant="ghost"
+                type="button"
+                onClick={() => dirtyClose.handleOpenChange(false)}
+              >
                 Cancel
               </Button>
               <Button
@@ -220,6 +227,7 @@ export function RuleModal({ open, onOpenChange, rule, onSubmit }: RuleModalProps
               </Button>
             </ModalFooter>
           </Form>
+          {dirtyClose.dialog}
         </ModalContent>
       </ModalPortal>
     </Modal>

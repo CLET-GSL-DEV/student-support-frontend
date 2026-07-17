@@ -25,6 +25,7 @@ import {
   Textarea,
 } from '@rfdtech/components';
 
+import { useDirtyClose } from '@/components/dirty-close';
 import {
   ACADEMIC_STANDINGS,
   ACADEMIC_STANDING_LABELS,
@@ -66,6 +67,8 @@ export function WindowModal({ open, onOpenChange, window, onSubmit }: WindowModa
     },
   });
 
+  const dirtyClose = useDirtyClose(form.formState.isDirty, onOpenChange);
+
   const handleSubmit = async (values: WindowFormValues) => {
     try {
       await onSubmit(values);
@@ -78,7 +81,7 @@ export function WindowModal({ open, onOpenChange, window, onSubmit }: WindowModa
   };
 
   return (
-    <Modal open={open} onOpenChange={onOpenChange}>
+    <Modal open={open} onOpenChange={dirtyClose.handleOpenChange}>
       <ModalPortal>
         <ModalOverlay />
         <ModalContent showCloseButton size="lg">
@@ -219,7 +222,11 @@ export function WindowModal({ open, onOpenChange, window, onSubmit }: WindowModa
               </div>
             </ModalBody>
             <ModalFooter>
-              <Button variant="ghost" type="button" onClick={() => onOpenChange(false)}>
+              <Button
+                variant="ghost"
+                type="button"
+                onClick={() => dirtyClose.handleOpenChange(false)}
+              >
                 Cancel
               </Button>
               <Button
@@ -233,6 +240,7 @@ export function WindowModal({ open, onOpenChange, window, onSubmit }: WindowModa
               </Button>
             </ModalFooter>
           </Form>
+          {dirtyClose.dialog}
         </ModalContent>
       </ModalPortal>
     </Modal>

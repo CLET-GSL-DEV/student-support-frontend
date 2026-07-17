@@ -24,6 +24,7 @@ import {
   Textarea,
 } from '@rfdtech/components';
 
+import { useDirtyClose } from '@/components/dirty-close';
 import type { AdmissionsWorkflowStage } from '@/types/admissionsWorkflow';
 
 import { type StageFormValues, stageFormSchema } from '../forms';
@@ -48,6 +49,8 @@ export function StageModal({ open, onOpenChange, stage, onSubmit }: StageModalPr
     },
   });
 
+  const dirtyClose = useDirtyClose(form.formState.isDirty, onOpenChange);
+
   const handleSubmit = async (values: StageFormValues) => {
     try {
       await onSubmit(values);
@@ -60,7 +63,7 @@ export function StageModal({ open, onOpenChange, stage, onSubmit }: StageModalPr
   };
 
   return (
-    <Modal open={open} onOpenChange={onOpenChange}>
+    <Modal open={open} onOpenChange={dirtyClose.handleOpenChange}>
       <ModalPortal>
         <ModalOverlay />
         <ModalContent showCloseButton size="md">
@@ -133,7 +136,11 @@ export function StageModal({ open, onOpenChange, stage, onSubmit }: StageModalPr
               </div>
             </ModalBody>
             <ModalFooter>
-              <Button variant="ghost" type="button" onClick={() => onOpenChange(false)}>
+              <Button
+                variant="ghost"
+                type="button"
+                onClick={() => dirtyClose.handleOpenChange(false)}
+              >
                 Cancel
               </Button>
               <Button
@@ -147,6 +154,7 @@ export function StageModal({ open, onOpenChange, stage, onSubmit }: StageModalPr
               </Button>
             </ModalFooter>
           </Form>
+          {dirtyClose.dialog}
         </ModalContent>
       </ModalPortal>
     </Modal>

@@ -23,6 +23,7 @@ import {
   Textarea,
 } from '@rfdtech/components';
 
+import { useDirtyClose } from '@/components/dirty-close';
 import type { NotificationCategory, NotificationTemplate } from '@/types/notifications';
 
 import { type TemplateFormValues, templateFormSchema } from '../forms';
@@ -61,6 +62,8 @@ export function TemplateModal({
     label: category.name,
   }));
 
+  const dirtyClose = useDirtyClose(form.formState.isDirty, onOpenChange);
+
   const handleSubmit = async (values: TemplateFormValues) => {
     try {
       await onSubmit(values);
@@ -73,7 +76,7 @@ export function TemplateModal({
   };
 
   return (
-    <Modal open={open} onOpenChange={onOpenChange}>
+    <Modal open={open} onOpenChange={dirtyClose.handleOpenChange}>
       <ModalPortal>
         <ModalOverlay />
         <ModalContent showCloseButton size="lg">
@@ -172,7 +175,11 @@ export function TemplateModal({
               </div>
             </ModalBody>
             <ModalFooter>
-              <Button variant="ghost" type="button" onClick={() => onOpenChange(false)}>
+              <Button
+                variant="ghost"
+                type="button"
+                onClick={() => dirtyClose.handleOpenChange(false)}
+              >
                 Cancel
               </Button>
               <Button
@@ -186,6 +193,7 @@ export function TemplateModal({
               </Button>
             </ModalFooter>
           </Form>
+          {dirtyClose.dialog}
         </ModalContent>
       </ModalPortal>
     </Modal>
