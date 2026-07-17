@@ -17,6 +17,7 @@ import { welfareRoutingKeys } from '@/api/welfareRouting';
 import { ConfirmDialog } from '@/components/confirm';
 import { QueryErrorNotice } from '@/components/query-error';
 import { welfareRoutingRepository } from '@/data/welfareRouting';
+import { useCreateParam } from '@/hooks/useCreateParam';
 import {
   REFERRAL_CATEGORY_LABELS,
   ROUTING_PRIORITIES,
@@ -46,6 +47,9 @@ export function RulesTable() {
     setModalKey((key) => key + 1);
     setModalOpen(true);
   }
+
+  // Dashboard quick action: /welfare-routing?new=rule
+  useCreateParam('rule', openCreate);
 
   function openEdit(rule: WelfareRoutingRule) {
     setEditing(rule);

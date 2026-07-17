@@ -1,3 +1,5 @@
+import { useSearchParams } from 'react-router';
+
 import {
   SectionDescription,
   SectionHeader,
@@ -19,6 +21,11 @@ import { CategoriesTable, TemplatesTable } from '../components';
  * records to the S003 audit seam.
  */
 export function Component() {
+  // The "Add notification category" quick action lands on the categories
+  // tab so its create modal (opened via useCreateParam) is mounted.
+  const [searchParams] = useSearchParams();
+  const initialTab = searchParams.get('new') === 'category' ? 'categories' : 'templates';
+
   return (
     <CapabilityGate capability={CAPABILITIES.NOTIFICATIONS_READ}>
       <div className="flex flex-col gap-6">
@@ -29,7 +36,7 @@ export function Component() {
             locked against opt-out in the student app.
           </SectionDescription>
         </SectionHeader>
-        <Tabs variant="pill" defaultValue="templates">
+        <Tabs variant="pill" defaultValue={initialTab}>
           <TabsList>
             <TabsTrigger value="templates">Templates</TabsTrigger>
             <TabsTrigger value="categories">Categories</TabsTrigger>

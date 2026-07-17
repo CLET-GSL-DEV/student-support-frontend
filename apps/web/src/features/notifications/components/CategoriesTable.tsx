@@ -20,6 +20,7 @@ import { notificationsKeys } from '@/api/notifications';
 import { ConfirmDialog } from '@/components/confirm';
 import { QueryErrorNotice } from '@/components/query-error';
 import { notificationsRepository } from '@/data/notifications';
+import { useCreateParam } from '@/hooks/useCreateParam';
 import type { NotificationCategory } from '@/types/notifications';
 
 import type { CategoryFormValues } from '../forms';
@@ -48,6 +49,9 @@ export function CategoriesTable() {
     setModalKey((key) => key + 1);
     setModalOpen(true);
   }
+
+  // Dashboard quick action: /notifications?new=category
+  useCreateParam('category', openCreate);
 
   function openEdit(category: NotificationCategory) {
     setEditing(category);

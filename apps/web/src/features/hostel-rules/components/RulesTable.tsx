@@ -17,6 +17,7 @@ import { hostelRulesKeys } from '@/api/hostelRules';
 import { ConfirmDialog } from '@/components/confirm';
 import { QueryErrorNotice } from '@/components/query-error';
 import { hostelRulesRepository } from '@/data/hostelRules';
+import { useCreateParam } from '@/hooks/useCreateParam';
 import {
   ALLOCATION_STRATEGY_LABELS,
   APPLICANT_GROUP_LABELS,
@@ -46,6 +47,9 @@ export function RulesTable() {
     setModalKey((key) => key + 1);
     setModalOpen(true);
   }
+
+  // Dashboard quick action: /hostel-rules?new=rule
+  useCreateParam('rule', openCreate);
 
   function openEdit(rule: HostelAllocationRule) {
     setEditing(rule);

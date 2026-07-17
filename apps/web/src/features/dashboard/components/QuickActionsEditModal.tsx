@@ -13,28 +13,27 @@ import {
   ModalTitle,
 } from '@rfdtech/components';
 
-import type { AdminArea } from '@/constants/admin';
-import { ADMIN_AREA_NAV } from '@/constants/adminNav';
+import { QUICK_ACTIONS } from '@/constants/quickActions';
 
 interface QuickActionsEditModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  selected: AdminArea[];
-  onSave: (areas: AdminArea[]) => void;
+  selected: string[];
+  onSave: (actionIds: string[]) => void;
 }
 
-/** Choose which admin areas appear as dashboard quick actions. */
+/** Choose which tasks appear as dashboard quick actions. */
 export function QuickActionsEditModal({
   open,
   onOpenChange,
   selected,
   onSave,
 }: QuickActionsEditModalProps) {
-  const [draft, setDraft] = useState<AdminArea[]>(selected);
+  const [draft, setDraft] = useState<string[]>(selected);
 
-  function toggle(area: AdminArea, checked: boolean) {
+  function toggle(actionId: string, checked: boolean) {
     setDraft((current) =>
-      checked ? [...current, area] : current.filter((value) => value !== area),
+      checked ? [...current, actionId] : current.filter((value) => value !== actionId),
     );
   }
 
@@ -53,12 +52,12 @@ export function QuickActionsEditModal({
           </ModalHeader>
           <ModalBody>
             <div className="flex flex-col gap-3">
-              {ADMIN_AREA_NAV.map((item) => (
+              {QUICK_ACTIONS.map((action) => (
                 <Checkbox
-                  key={item.area}
-                  label={item.label}
-                  checked={draft.includes(item.area)}
-                  onCheckedChange={(checked) => toggle(item.area, checked)}
+                  key={action.id}
+                  label={action.label}
+                  checked={draft.includes(action.id)}
+                  onCheckedChange={(checked) => toggle(action.id, checked)}
                 />
               ))}
             </div>

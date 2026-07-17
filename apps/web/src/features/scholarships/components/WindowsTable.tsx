@@ -20,6 +20,7 @@ import { scholarshipsKeys } from '@/api/scholarships';
 import { ConfirmDialog } from '@/components/confirm';
 import { QueryErrorNotice } from '@/components/query-error';
 import { scholarshipsRepository } from '@/data/scholarships';
+import { useCreateParam } from '@/hooks/useCreateParam';
 import {
   ACADEMIC_STANDING_LABELS,
   type ScholarshipWindow,
@@ -74,6 +75,9 @@ export function WindowsTable() {
     setModalKey((key) => key + 1);
     setModalOpen(true);
   }
+
+  // Dashboard quick action: /scholarships?new=window
+  useCreateParam('window', openCreate);
 
   function openEdit(window: ScholarshipWindow) {
     setEditing(window);

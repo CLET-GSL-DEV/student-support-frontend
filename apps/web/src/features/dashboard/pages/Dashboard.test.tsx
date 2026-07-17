@@ -38,17 +38,18 @@ function renderDashboard() {
 }
 
 describe('Dashboard', () => {
-  it('renders quick actions for every admin area by default', () => {
+  it('renders task-level quick actions from the full catalog by default', () => {
     renderDashboard();
 
     for (const label of [
-      'Notification Content',
-      'Scholarship Windows',
-      'Welfare Routing',
-      'Hostel Allocation',
-      'Admissions Workflow',
-      'Release Governance',
-      'Audit Log',
+      'Add notification template',
+      'Add notification category',
+      'Add scholarship',
+      'Add routing rule',
+      'Add allocation rule',
+      'Prepare release',
+      'Review admissions stages',
+      'View audit log',
     ]) {
       expect(screen.getByRole('button', { name: label })).toBeInTheDocument();
     }

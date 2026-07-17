@@ -4,25 +4,26 @@ import { useNavigate } from 'react-router';
 import { Button, Card, CardActions, CardHeader, CardTitle } from '@rfdtech/components';
 import { Pencil } from 'lucide-react';
 
-import { ADMIN_AREA_NAV } from '@/constants/adminNav';
+import { QUICK_ACTIONS } from '@/constants/quickActions';
 import { useQuickActionsStore } from '@/stores';
 
 import { QuickActionsEditModal } from './QuickActionsEditModal';
 
 /**
- * Editable shortcuts into the admin areas, replacing a static repeat of the
- * sidebar. The selection is a persisted per-browser preference; rendering
- * filters against the current nav config so stale entries are ignored.
+ * Editable task shortcuts: each action deep-links into its screen and, for
+ * create actions, opens the create modal on arrival (via ?new=<entity>).
+ * The selection is a persisted per-browser preference; rendering filters
+ * against the catalog so stale entries are ignored.
  */
 export function QuickActions() {
   const navigate = useNavigate();
-  const areas = useQuickActionsStore((state) => state.areas);
-  const setAreas = useQuickActionsStore((state) => state.setAreas);
+  const actionIds = useQuickActionsStore((state) => state.actionIds);
+  const setActionIds = useQuickActionsStore((state) => state.setActionIds);
 
   const [editOpen, setEditOpen] = useState(false);
   const [modalKey, setModalKey] = useState(0);
 
-  const items = ADMIN_AREA_NAV.filter((item) => areas.includes(item.area));
+  const actions = QUICK_ACTIONS.filter((action) => actionIds.includes(action.id));
 
   return (
     <Card className="flex flex-col gap-4">
@@ -42,18 +43,24 @@ export function QuickActions() {
           </Button>
         </CardActions>
       </CardHeader>
-      {items.length === 0 ? (
+      {actions.length === 0 ? (
         <p className="text-sm text-foreground-muted">
-          No quick actions selected. Use Edit to choose the areas you want at hand.
+          No quick actions selected. Use Edit to choose the tasks you want at hand.
         </p>
       ) : (
         <div className="flex flex-wrap gap-3">
-          {items.map((item) => {
-            const Icon = item.icon;
+          {actions.map((action) => {
+            const Icon = action.icon;
             return (
-              <Button key={item.area} variant="secondary" onClick={() => void navigate(item.route)}>
+              <Button
+                key={action.id}
+                variant="secondary"
+                onClick={() =>
+                  void navigate({ pathname: action.route, search: action.search ?? '' })
+                }
+              >
                 <Icon size={16} strokeWidth={2} aria-hidden />
-                {item.label}
+                {action.label}
               </Button>
             );
           })}
@@ -63,8 +70,8 @@ export function QuickActions() {
         key={modalKey}
         open={editOpen}
         onOpenChange={setEditOpen}
-        selected={areas}
-        onSave={setAreas}
+        selected={actionIds}
+        onSave={setActionIds}
       />
     </Card>
   );

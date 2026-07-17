@@ -1,27 +1,33 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-import type { AdminArea } from '@/constants/admin';
-import { ADMIN_AREA_NAV } from '@/constants/adminNav';
+import { QUICK_ACTIONS } from '@/constants/quickActions';
 
 interface QuickActionsState {
-  /** Areas the administrator has chosen to surface on the dashboard. */
-  areas: AdminArea[];
-  setAreas: (areas: AdminArea[]) => void;
+  /** Ids of the quick actions the administrator has chosen to surface. */
+  actionIds: string[];
+  setActionIds: (actionIds: string[]) => void;
 }
+
+const DEFAULT_ACTION_IDS = QUICK_ACTIONS.map((action) => action.id);
 
 /**
  * Editable dashboard quick actions. Persisted to localStorage: a pure UI
  * preference, no sensitive data, so surviving reloads is safe and expected.
- * Defaults to every admin area; rendering filters against the current nav
- * config so a stale persisted entry can never break the dashboard.
+ * Defaults to the full catalog; rendering filters against it so a stale
+ * persisted id can never break the dashboard.
  */
 export const useQuickActionsStore = create<QuickActionsState>()(
   persist(
     (set) => ({
-      areas: ADMIN_AREA_NAV.map((item) => item.area),
-      setAreas: (areas) => set({ areas }),
+      actionIds: DEFAULT_ACTION_IDS,
+      setActionIds: (actionIds) => set({ actionIds }),
     }),
-    { name: 'gsl-admin-quick-actions' },
+    {
+      name: 'gsl-admin-quick-actions',
+      version: 1,
+      // v0 persisted area slugs rather than action ids; reset to defaults.
+      migrate: () => ({ actionIds: DEFAULT_ACTION_IDS }),
+    },
   ),
 );

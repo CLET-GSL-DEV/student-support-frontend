@@ -19,6 +19,7 @@ import { notificationsKeys } from '@/api/notifications';
 import { ConfirmDialog } from '@/components/confirm';
 import { QueryErrorNotice } from '@/components/query-error';
 import { notificationsRepository } from '@/data/notifications';
+import { useCreateParam } from '@/hooks/useCreateParam';
 import type { NotificationTemplate } from '@/types/notifications';
 
 import type { TemplateFormValues } from '../forms';
@@ -57,6 +58,9 @@ export function TemplatesTable() {
     setModalKey((key) => key + 1);
     setModalOpen(true);
   }
+
+  // Dashboard quick action: /notifications?new=template
+  useCreateParam('template', openCreate);
 
   function openEdit(template: NotificationTemplate) {
     setEditing(template);

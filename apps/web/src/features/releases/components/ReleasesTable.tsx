@@ -20,6 +20,7 @@ import { releasesKeys } from '@/api/releases';
 import { QueryErrorNotice } from '@/components/query-error';
 import { useStepUp } from '@/components/step-up';
 import { releasesRepository } from '@/data/releases';
+import { useCreateParam } from '@/hooks/useCreateParam';
 import {
   type AppRelease,
   PLATFORM_LABELS,
@@ -67,6 +68,14 @@ export function ReleasesTable() {
   const [createOpen, setCreateOpen] = useState(false);
   const [recordingAudit, setRecordingAudit] = useState<AppRelease | null>(null);
   const [modalKey, setModalKey] = useState(0);
+
+  function openCreate() {
+    setModalKey((key) => key + 1);
+    setCreateOpen(true);
+  }
+
+  // Dashboard quick action: /releases?new=release
+  useCreateParam('release', openCreate);
 
   async function invalidateReleases() {
     await queryClient.invalidateQueries({ queryKey: releasesKeys.list() });
@@ -194,14 +203,7 @@ export function ReleasesTable() {
       <Table paramPrefix="releases">
         <TableHeader>
           <TableActions>
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={() => {
-                setModalKey((key) => key + 1);
-                setCreateOpen(true);
-              }}
-            >
+            <Button variant="primary" size="sm" onClick={openCreate}>
               <Plus size={16} strokeWidth={2} aria-hidden />
               Prepare release
             </Button>
