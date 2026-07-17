@@ -30,5 +30,15 @@ Located in `.claude/skills/` (mirror at `.opencode/skills/`):
 See `ARCHITECTURE.md` at the repo root for the full monorepo layout, the endpoint-factory pattern,
 the design-system theming contract, and single-app vs multi-app usage guides.
 
+## Operating manual
+
+`operating-manual-software-delivery.md` at the repo root is the operating manual for excellent
+software delivery. It governs how work is planned and shipped here: understand the product before
+touching a tool, design system before any screen, designed-not-generated UI, contract-first
+architecture, standards applied by risk, vertical slices on a walking skeleton, break-it testing
+with evidence, security and privacy baked in, and production readiness as a feature. Read it before
+planning any feature, milestone, or delivery decision, and hold finished work to its closing
+self-test. Its sections are ordered like a real build — do not apply them out of sequence.
+
 For all other rules (no emojis, no inline styles, confidence check, typecheck after edits, git
 workflow, env validation) — read the relevant skill. They are not duplicated here on purpose.

@@ -7,9 +7,36 @@ allowBuilds:
 
 minimumReleaseAgeExclude:
   - '@rfdtech/components@2.0.1'
+  - '@tailwindcss/node@4.3.3'
+  - '@tailwindcss/oxide-android-arm64@4.3.3'
+  - '@tailwindcss/oxide-darwin-arm64@4.3.3'
+  - '@tailwindcss/oxide-darwin-x64@4.3.3'
+  - '@tailwindcss/oxide-freebsd-x64@4.3.3'
+  - '@tailwindcss/oxide-linux-arm-gnueabihf@4.3.3'
+  - '@tailwindcss/oxide-linux-arm64-gnu@4.3.3'
+  - '@tailwindcss/oxide-linux-arm64-musl@4.3.3'
+  - '@tailwindcss/oxide-linux-x64-gnu@4.3.3'
+  - '@tailwindcss/oxide-linux-x64-musl@4.3.3'
+  - '@tailwindcss/oxide-wasm32-wasi@4.3.3'
+  - '@tailwindcss/oxide-win32-arm64-msvc@4.3.3'
+  - '@tailwindcss/oxide-win32-x64-msvc@4.3.3'
+  - '@tailwindcss/oxide@4.3.3'
+  - '@tailwindcss/vite@4.3.3'
+  - tailwindcss@4.3.3
+  - vite@8.1.5
 
 # Allow only trusted dependencies to run install/build scripts (pnpm 11+).
 # @rfdtech/components' postinstall wires its MCP dev-tooling (component search, etc.).
 onlyBuiltDependencies:
   - esbuild
   - '@rfdtech/components'
+
+patchedDependencies:
+  '@rfdtech/components@2.0.1': patches/@rfdtech__components@2.0.1.patch
+
+overrides:
+  # SheetJS stopped publishing to the npm registry at 0.18.5, which carries a
+  # high-severity prototype-pollution advisory (fixed in >=0.19.3). Patched
+  # builds ship from the vendor CDN only, so the audit gate needs this
+  # override until @rfdtech/components drops or revendors its xlsx peer.
+  xlsx: 'https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz'

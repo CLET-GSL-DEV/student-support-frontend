@@ -4,27 +4,31 @@ import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
+  SidebarGroupLabel,
   SidebarItem,
   SidebarLink,
   SidebarNav,
 } from '@rfdtech/components';
 import { LayoutDashboard } from 'lucide-react';
 
+import { CONFIG_AREA_NAV, OVERSIGHT_AREA_NAV } from '@/constants/adminNav';
 import { ROUTES } from '@/constants/routes';
 
 /**
- * Fixed literal nav array — this app owns a single role, so it doesn't need
- * `admin-portal`'s role-filtered nav machinery (see the `architecture`
- * skill's routing/nav notes). Add items here as the app grows.
+ * Admin Portal navigation: the SRS §2.3 configuration areas plus the
+ * analytics, audit, and release-governance surfaces. Single-role portal, so
+ * the nav is a fixed literal config (see constants/adminNav.ts), no
+ * role-filtering machinery.
  */
 export function MainSidebarPanel() {
   const location = useLocation();
 
   return (
-    <Sidebar>
+    <Sidebar variant="plain">
       <SidebarContent>
         <SidebarNav>
-          <SidebarGroup>
+          <SidebarGroup collapsible defaultExpanded>
+            <SidebarGroupLabel>Main</SidebarGroupLabel>
             <SidebarItem>
               <SidebarLink
                 to={ROUTES.DASHBOARD}
@@ -34,6 +38,37 @@ export function MainSidebarPanel() {
                 Dashboard
               </SidebarLink>
             </SidebarItem>
+            {CONFIG_AREA_NAV.map((item) => {
+              const Icon = item.icon;
+              return (
+                <SidebarItem key={item.area}>
+                  <SidebarLink
+                    to={item.route}
+                    icon={<Icon size={18} strokeWidth={1.5} />}
+                    active={location.pathname.startsWith(item.route)}
+                  >
+                    {item.label}
+                  </SidebarLink>
+                </SidebarItem>
+              );
+            })}
+          </SidebarGroup>
+          <SidebarGroup collapsible>
+            <SidebarGroupLabel>Oversight</SidebarGroupLabel>
+            {OVERSIGHT_AREA_NAV.map((item) => {
+              const Icon = item.icon;
+              return (
+                <SidebarItem key={item.area}>
+                  <SidebarLink
+                    to={item.route}
+                    icon={<Icon size={18} strokeWidth={1.5} />}
+                    active={location.pathname.startsWith(item.route)}
+                  >
+                    {item.label}
+                  </SidebarLink>
+                </SidebarItem>
+              );
+            })}
           </SidebarGroup>
         </SidebarNav>
       </SidebarContent>

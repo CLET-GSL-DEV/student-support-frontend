@@ -4,7 +4,7 @@
 
 ## Scope
 
-- [ ] Apps: <!-- admin-portal / public-portal / none -->
+- [ ] Apps: <!-- web / none -->
 - [ ] Shared packages: <!-- ui / api-client / utils / ... / none -->
 
 ## Checklist

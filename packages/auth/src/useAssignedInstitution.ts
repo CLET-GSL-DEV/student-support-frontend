@@ -2,7 +2,7 @@ import { useSessionStore } from './sessionStore';
 
 /**
  * The signed-in officer's institution, assigned by IAM at account creation
- * (SRS-F000-01) and delivered in the EVS `/me` profile that `SessionProvider`
+ * (SRS-F000-01) and delivered in the Student Support `/me` profile that `SessionProvider`
  * already polls into `useSessionStore` — no separate call needed here.
  *
  * Officers never select an institution; every officer-scoped view reads it

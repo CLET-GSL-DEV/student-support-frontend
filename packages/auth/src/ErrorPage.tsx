@@ -38,8 +38,8 @@ export function ErrorPage({
           <div className="relative w-4xl">
             <div className="flex flex-col gap-8 w-[240px]">
               <img
-                src="/evs-logo.png"
-                alt="EVS"
+                src="/clet_logo.png"
+                alt="GSL Student Support"
                 className="scale-[1.1] translate-x-[-5%] h-auto aspect-square  opacity-10"
               />
               {code && (

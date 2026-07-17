@@ -40,6 +40,34 @@ export const router = createBrowserRouter([
         children: [
           { index: true, lazy: () => import('@/features/dashboard/pages/Dashboard') },
           { path: ROUTES.DASHBOARD, lazy: () => import('@/features/dashboard/pages/Dashboard') },
+          {
+            path: ROUTES.NOTIFICATIONS,
+            lazy: () => import('@/features/notifications/pages/NotificationsPage'),
+          },
+          {
+            path: ROUTES.SCHOLARSHIPS,
+            lazy: () => import('@/features/scholarships/pages/ScholarshipsPage'),
+          },
+          {
+            path: ROUTES.WELFARE_ROUTING,
+            lazy: () => import('@/features/welfare-routing/pages/WelfareRoutingPage'),
+          },
+          {
+            path: ROUTES.HOSTEL_RULES,
+            lazy: () => import('@/features/hostel-rules/pages/HostelRulesPage'),
+          },
+          {
+            path: ROUTES.ADMISSIONS_WORKFLOW,
+            lazy: () => import('@/features/admissions-workflow/pages/AdmissionsWorkflowPage'),
+          },
+          {
+            path: ROUTES.AUDIT_LOG,
+            lazy: () => import('@/features/audit-log/pages/AuditLogPage'),
+          },
+          {
+            path: ROUTES.RELEASES,
+            lazy: () => import('@/features/releases/pages/ReleasesPage'),
+          },
         ],
       },
     ],

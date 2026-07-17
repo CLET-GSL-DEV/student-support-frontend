@@ -1,7 +1,7 @@
 import { ROLES } from './roles';
 
 /**
- * Every EVS portal, keyed by the ZITADEL role it's gated on. Each portal is a
+ * Every GSL Student Support portal, keyed by the ZITADEL role it's gated on. Each portal is a
  * separately deployed app on its own origin (see each `apps/*-portal/vite.config.ts`
  * for the matching dev port) — `INTERNAL_ASSESSOR` and `GTEC_ASSESSOR` share the Accessor
  * portal, matching `packages/auth/src/roles.ts`'s alias notes.

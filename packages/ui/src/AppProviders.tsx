@@ -29,7 +29,7 @@ export interface AppProvidersSessionConfig {
 
 export interface AppProvidersAuthConfig {
   zitadelEnv: ZitadelEnv;
-  /** The app's EVS client (`createApiClient`) — the default for every module's endpoints. */
+  /** The app's Student Support client (`createApiClient`) — the default for every module's endpoints. */
   apiClient: AxiosInstance;
   /** The IAM client (`createIamClient`) — the session poller's `/me` lives there. */
   iamClient: AxiosInstance;
@@ -63,7 +63,7 @@ interface AppProvidersProps {
  * fresh sign-in does. Without `auth`: ErrorBoundary > ThemeProvider >
  * QueryClientProvider > children (the original, auth-free composition).
  *
- * `ApiClientProvider` carries the EVS client, because that's what the vast
+ * `ApiClientProvider` carries the Student Support client, because that's what the vast
  * majority of endpoints target. IAM endpoints take `iamClient` explicitly.
  */
 export function AppProviders({

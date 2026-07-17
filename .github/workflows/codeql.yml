@@ -11,17 +11,28 @@ on:
 permissions:
   contents: read
   security-events: write
+  # codeql-action needs to read workflow-run metadata for its status
+  # reporting; without this the analyze step fails with "Resource not
+  # accessible by integration".
+  actions: read
 
 jobs:
   analyze:
     name: Analyze (javascript-typescript)
     runs-on: ubuntu-latest
+    # Code scanning needs the org to enable Code Security (GitHub Advanced
+    # Security) on this private repository; without it the SARIF upload is
+    # rejected and the check fails on every run. Once Code Security is
+    # enabled, set the repository variable CODE_SECURITY_ENABLED to 'true'
+    # (Settings > Secrets and variables > Actions > Variables) and this job
+    # starts running again.
+    if: ${{ vars.CODE_SECURITY_ENABLED == 'true' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@v4
         with:
           languages: javascript-typescript
           queries: security-and-quality
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@v4

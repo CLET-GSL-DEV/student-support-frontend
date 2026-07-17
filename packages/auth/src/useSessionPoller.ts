@@ -9,14 +9,14 @@ import { type IamMeResponse, mapIamMeResponse, meEndpoint } from './session-api'
 import { type SessionUser, useSessionStore } from './sessionStore';
 import { useAuth } from './useAuth';
 
-/** The EVS project-role slugs, sourced from the authoritative ZITADEL token
+/** The GSL Student Support project-role slugs, sourced from the authoritative ZITADEL token
  * (via `hasRole`) rather than IAM `/me`, which only carries IAM platform
  * roles. Deduped so aliases mapping to the same slug don't repeat. */
-const EVS_ROLE_SLUGS = Array.from(new Set(Object.values(ROLES)));
+const GSL_ROLE_SLUGS = Array.from(new Set(Object.values(ROLES)));
 
 export interface UseSessionPollerOptions {
   /** The IAM axios client (from `createIamClient`, pointed at the IAM
-   * backend `/api/iam/v1`). Passing the app's EVS client here is a 404. */
+   * backend `/api/iam/v1`). Passing the app's Student Support client here is a 404. */
   client: AxiosInstance;
   /** Poll interval in ms — matches the old single-app poller's cadence. */
   intervalMs?: number;
@@ -91,7 +91,7 @@ export function useSessionPoller({
       // on-login check, no polling. Populate the session user straight from
       // the ZITADEL token so HeaderProfile/role UI still render.
       const claims = oidcProfile.current;
-      const tokenRoleSlugs = EVS_ROLE_SLUGS.filter((slug) => hasRoleRef.current(slug));
+      const tokenRoleSlugs = GSL_ROLE_SLUGS.filter((slug) => hasRoleRef.current(slug));
       const nextUser: SessionUser = {
         id: claims?.sub ?? '',
         email: claims?.email ?? '',
@@ -117,9 +117,9 @@ export function useSessionPoller({
         let nextUser = mapProfile(data);
         // IAM `/me` only carries IAM platform roles (e.g. `iam_admin`), which
         // `normalizeRoles` strips — leaving the role switcher empty. The real
-        // EVS project roles live in the ZITADEL token, so source them from
+        // GSL Student Support project roles live in the ZITADEL token, so source them from
         // `hasRole` (the same authoritative check `ProtectedRoute` uses).
-        const tokenRoleSlugs = EVS_ROLE_SLUGS.filter((slug) => hasRoleRef.current(slug));
+        const tokenRoleSlugs = GSL_ROLE_SLUGS.filter((slug) => hasRoleRef.current(slug));
         if (tokenRoleSlugs.length > 0) {
           nextUser = { ...nextUser, roles: normalizeRoles(tokenRoleSlugs) };
         }

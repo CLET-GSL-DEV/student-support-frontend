@@ -12,6 +12,8 @@ interface ImportMetaEnv {
   readonly VITE_ZITADEL_REDIRECT_URI: string;
   readonly VITE_ZITADEL_POST_LOGOUT_URI: string;
   readonly VITE_ZITADEL_PROJECT_ID: string;
+  readonly VITE_ADMIN_DATA_SOURCE: 'mock' | 'api';
+  readonly VITE_ADMIN_MOCK_SCENARIO: 'populated' | 'empty' | 'error';
 }
 
 interface ImportMeta {

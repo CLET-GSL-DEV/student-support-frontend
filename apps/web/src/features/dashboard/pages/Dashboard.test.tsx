@@ -1,38 +1,71 @@
+import { RouterProvider, createMemoryRouter } from 'react-router';
+
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import axios from 'axios';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
-import { ApiClientProvider } from '@starter/api-client';
 import { AppProviders } from '@starter/ui';
-
-import { useCounterStore } from '@/stores';
 
 import { Component as Dashboard } from './Dashboard';
 
-const testClient = axios.create({ baseURL: 'http://localhost:3000/api' });
+// Hermetic env: the dashboard's data layer transitively imports @/config/env,
+// whose zod schema requires ZITADEL URLs that only exist in a real .env.
+vi.mock('@/config/env', () => ({
+  env: {
+    apiUrl: '/api/app',
+    iamUrl: '/api/iam',
+    appEnv: 'development',
+    sentryDsn: '',
+    sessionCheckEnabled: false,
+    zitadel: {
+      authority: 'http://localhost:8080',
+      clientId: '',
+      redirectUri: 'http://localhost:5290/auth/callback',
+      postLogoutRedirectUri: 'http://localhost:5290/auth/logout/callback',
+      projectId: '',
+    },
+    adminDataSource: 'mock',
+    adminMockScenario: 'populated',
+  },
+}));
 
 function renderDashboard() {
+  const router = createMemoryRouter([{ path: '/', element: <Dashboard /> }]);
   return render(
     <AppProviders>
-      <ApiClientProvider client={testClient}>
-        <Dashboard />
-      </ApiClientProvider>
+      <RouterProvider router={router} />
     </AppProviders>,
   );
 }
 
 describe('Dashboard', () => {
-  beforeEach(() => {
-    useCounterStore.getState().reset();
-  });
-
-  it('increments the counter store on click', async () => {
-    const user = userEvent.setup();
+  it('renders task-level quick actions from the full catalog by default', () => {
     renderDashboard();
 
-    expect(screen.getByText('0')).toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: '+' }));
-    expect(screen.getByText('1')).toBeInTheDocument();
+    for (const label of [
+      'Add notification template',
+      'Add notification category',
+      'Add scholarship',
+      'Add routing rule',
+      'Add allocation rule',
+      'Prepare release',
+      'Review admissions stages',
+      'View audit log',
+    ]) {
+      expect(screen.getByRole('button', { name: label })).toBeInTheDocument();
+    }
+  });
+
+  it('renders aggregate metrics from the analytics repository', async () => {
+    renderDashboard();
+
+    expect(await screen.findByText('Notifications delivered')).toBeInTheDocument();
+    expect(await screen.findByText('Scholarship applications')).toBeInTheDocument();
+  });
+
+  it('renders the aggregate analytics views', async () => {
+    renderDashboard();
+
+    expect(await screen.findByText('Module usage (last 30 days)')).toBeInTheDocument();
+    expect(screen.getByText('Weekly active students')).toBeInTheDocument();
   });
 });

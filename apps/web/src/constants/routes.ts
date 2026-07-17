@@ -10,6 +10,16 @@ export const ROUTES = {
   ...GLOBAL_ROUTES,
   HOME: '/',
   DASHBOARD: '/dashboard',
+  // Admin Portal configuration areas (SRS §2.3) plus the §1.2 governance and
+  // §5.1 audit surfaces. Routes are registered in router.tsx as each area's
+  // screen lands.
+  NOTIFICATIONS: '/notifications',
+  SCHOLARSHIPS: '/scholarships',
+  WELFARE_ROUTING: '/welfare-routing',
+  HOSTEL_RULES: '/hostel-rules',
+  ADMISSIONS_WORKFLOW: '/admissions-workflow',
+  AUDIT_LOG: '/audit-log',
+  RELEASES: '/releases',
 } as const;
 
 export type ROUTES = (typeof ROUTES)[keyof typeof ROUTES];

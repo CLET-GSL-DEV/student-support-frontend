@@ -35,7 +35,7 @@ function toAppItem(app: IamApp): AppItem {
  * origin (the deployed IAM gateway does not send CORS headers on most
  * routes — see `session-api.ts`'s doc comment) — pass it explicitly rather
  * than relying on the app's default `<ApiClientProvider>` client, which
- * targets the EVS backend.
+ * targets the Student Support backend.
  *
  * Never throws: any query error (network, CORS, 401) just leaves the
  * switcher empty, since losing the app switcher must never block the rest

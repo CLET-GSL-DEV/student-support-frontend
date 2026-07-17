@@ -25,11 +25,11 @@ interface LoginScreenProps {
 }
 
 export function LoginScreen({
-  eyebrow = 'CLET Examination Verification System',
-  tagline = 'Examination Verification System',
+  eyebrow = 'GSL Student Support',
+  tagline = 'Student Support System',
   heading = 'Sign in to your account',
-  description = 'Secure, access to LLB Examination verification and Verification of candidate credentials.',
-  ctaLabel = 'Sign in to EVS Portal',
+  description = 'Secure access to student support services and resources.',
+  ctaLabel = 'Sign in to Student Support Portal',
   returnTo = '/',
 }: LoginScreenProps) {
   const auth = useAuth();
@@ -69,11 +69,7 @@ export function LoginScreen({
 
       <div className="landing__panel">
         <div className="landing__content">
-          <img
-            className="landing__logo"
-            src="/evs-logo.png"
-            alt="CLET Examination Verification Portal"
-          />
+          <img className="landing__logo" src="/clet_logo.png" alt="GSL Student Support Portal" />
 
           <h1 className="landing__heading">{heading}</h1>
           <p className="landing__desc">{description}</p>
