@@ -40,3 +40,13 @@ overrides:
   # builds ship from the vendor CDN only, so the audit gate needs this
   # override until @rfdtech/components drops or revendors its xlsx peer.
   xlsx: 'https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz'
+
+# Suppress audit advisories that are transitive DEV-TOOLING only (not in the
+# browser bundle), so the --audit-level=high gate stays meaningful for runtime
+# deps. Re-check on dependency bumps.
+auditConfig:
+  ignoreGhsas:
+    # fast-uri host-confusion — reaches us only via commitlint and
+    # @modelcontextprotocol/sdk (both dev/build-time). Patched in fast-uri >=3.1.4;
+    # drop this once the transitive deps bump.
+    - GHSA-v2hh-gcrm-f6hx
