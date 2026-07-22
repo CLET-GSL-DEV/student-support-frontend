@@ -3,6 +3,7 @@ import { resolveRepository } from '@/data/dataSource';
 import { ApiAnalyticsRepository } from './api';
 import { MockAnalyticsRepository } from './mock';
 import type { AnalyticsRepository } from './repository';
+import { SupabaseAnalyticsRepository } from './supabase';
 
 export type { AnalyticsRepository } from './repository';
 
@@ -10,4 +11,5 @@ export type { AnalyticsRepository } from './repository';
 export const analyticsRepository: AnalyticsRepository = resolveRepository<AnalyticsRepository>(
   new MockAnalyticsRepository(),
   new ApiAnalyticsRepository(),
+  new SupabaseAnalyticsRepository(),
 );

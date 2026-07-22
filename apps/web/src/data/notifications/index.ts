@@ -3,6 +3,7 @@ import { resolveRepository } from '@/data/dataSource';
 import { ApiNotificationsRepository } from './api';
 import { MockNotificationsRepository } from './mock';
 import type { NotificationsRepository } from './repository';
+import { SupabaseNotificationsRepository } from './supabase';
 
 export type { NotificationsRepository } from './repository';
 
@@ -11,4 +12,5 @@ export const notificationsRepository: NotificationsRepository =
   resolveRepository<NotificationsRepository>(
     new MockNotificationsRepository(),
     new ApiNotificationsRepository(),
+    new SupabaseNotificationsRepository(),
   );
