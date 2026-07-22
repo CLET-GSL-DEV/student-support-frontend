@@ -4,6 +4,7 @@ import type { NewAuditEvent } from '@/types/audit';
 import { ApiAuditRepository } from './api';
 import { MockAuditRepository } from './mock';
 import type { AuditRepository } from './repository';
+import { SupabaseAuditRepository } from './supabase';
 
 export type { AuditRepository } from './repository';
 
@@ -11,6 +12,7 @@ export type { AuditRepository } from './repository';
 export const auditRepository: AuditRepository = resolveRepository<AuditRepository>(
   new MockAuditRepository(),
   new ApiAuditRepository(),
+  new SupabaseAuditRepository(),
 );
 
 /**

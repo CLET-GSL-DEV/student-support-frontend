@@ -12,12 +12,12 @@ import { createAppConfig } from '@starter/vite-config';
  *    separate origin from the OIDC/API instance — that origin too. Falls
  *    back to an empty string when both are unset, keeping the CSP valid in
  *    any build mode (e.g. CI).
- *  - `__API_CSP_ORIGINS__` -> the bare origins of `VITE_API_URL` and
- *    `VITE_IAM_URL` when they're absolute URLs (deduped — the services may
- *    share a gateway or live on separate hosts), so `connect-src` allows the
- *    backends when calling them directly (no Vite dev-server proxy / reverse
- *    proxy in front). Relative values are same-origin already and contribute
- *    nothing here.
+ *  - `__API_CSP_ORIGINS__` -> the bare origins of `VITE_API_URL`,
+ *    `VITE_IAM_URL`, `VITE_EMAIL_FUNCTION_URL` and `VITE_SUPABASE_URL` when
+ *    they're absolute URLs (deduped — services may share a host), so
+ *    `connect-src` allows them when the browser calls them directly (no Vite
+ *    dev-server proxy / reverse proxy in front). Relative values are
+ *    same-origin already and contribute nothing here.
  *  - `__DEV_CSP_EXTRA__` -> `'unsafe-eval'` in `vite dev` only, empty in a
  *    production build. Some dependency's dev-mode code path (HMR/refresh
  *    machinery, or a library's environment probe) calls `eval`/`Function`;
@@ -37,7 +37,12 @@ function zitadelCsp(authority: string, apiOrigins: string, mode: string): Plugin
 
 /** Deduped bare `scheme://host[:port]` origins of the absolute service URLs. */
 function apiConnectOrigins(env: Record<string, string>): string {
-  const origins = [env.VITE_API_URL, env.VITE_IAM_URL]
+  const origins = [
+    env.VITE_API_URL,
+    env.VITE_IAM_URL,
+    env.VITE_EMAIL_FUNCTION_URL,
+    env.VITE_SUPABASE_URL,
+  ]
     .map((value) => (value ?? '').trim())
     .filter((value) => /^https?:\/\//.test(value))
     .flatMap((value) => {

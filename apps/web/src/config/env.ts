@@ -37,6 +37,17 @@ const envSchema = z.object({
   VITE_IAM_URL: serviceBaseUrl('/api/iam'),
   VITE_APP_ENV: z.enum(['development', 'staging', 'production']).default('development'),
   VITE_SENTRY_DSN: z.string().default(''),
+  // URL of the `send-email` Supabase Edge Function (supabase/functions/send-email),
+  // which holds the Resend API key server-side; the app POSTs here to send mail
+  // (see src/api/email.ts). Absolute http(s) URL; unset disables sending. Its
+  // origin is added to the CSP connect-src automatically (see vite.config.ts).
+  VITE_EMAIL_FUNCTION_URL: z
+    .string()
+    .default('')
+    .transform((v) => v.trim().replace(/\/+$/, ''))
+    .refine((v) => v === '' || /^https?:\/\/\S+$/.test(v), {
+      message: 'must be an absolute http(s) URL',
+    }),
   // Toggles the IAM `/me` session check: the on-login fetch AND the recurring
   // session poller. "false" makes zero `/me` calls — the session user is
   // derived from the ZITADEL token instead (see useSessionPoller).
@@ -53,11 +64,24 @@ const envSchema = z.object({
   // Frontend-only delivery switches for the Admin Portal data layer. Every
   // backend path sits behind a repository interface; 'mock' serves dummy data,
   // 'api' routes through the gateway client stubs (see src/data/dataSource.ts).
-  VITE_ADMIN_DATA_SOURCE: z.enum(['mock', 'api']).default('mock'),
+  VITE_ADMIN_DATA_SOURCE: z.enum(['mock', 'api', 'supabase']).default('mock'),
   // Initial mock scenario for every mock repository: 'populated' seeds dummy
   // data, 'empty' returns empty collections, 'error' makes calls fail, so
   // loading/empty/error states are exercisable without a backend.
   VITE_ADMIN_MOCK_SCENARIO: z.enum(['populated', 'empty', 'error']).default('populated'),
+  // Supabase project URL + public anon key, used when VITE_ADMIN_DATA_SOURCE
+  // is 'supabase' (see src/data/supabaseClient.ts). The anon key is
+  // publishable; never put a service-role key here. Unset is fine unless the
+  // data source is 'supabase'. The URL origin is added to the CSP connect-src
+  // (see vite.config.ts).
+  VITE_SUPABASE_URL: z
+    .string()
+    .default('')
+    .transform((v) => v.trim().replace(/\/+$/, ''))
+    .refine((v) => v === '' || /^https?:\/\/\S+$/.test(v), {
+      message: 'must be an absolute http(s) URL',
+    }),
+  VITE_SUPABASE_ANON_KEY: z.string().default(''),
 });
 
 const parsed = createEnv(envSchema, import.meta.env);
@@ -67,6 +91,7 @@ export const env = {
   iamUrl: parsed.VITE_IAM_URL,
   appEnv: parsed.VITE_APP_ENV,
   sentryDsn: parsed.VITE_SENTRY_DSN,
+  emailFunctionUrl: parsed.VITE_EMAIL_FUNCTION_URL,
   sessionCheckEnabled: parsed.VITE_SESSION_CHECK_ENABLED === 'true',
   zitadel: {
     authority: parsed.VITE_ZITADEL_AUTHORITY,
@@ -77,4 +102,6 @@ export const env = {
   },
   adminDataSource: parsed.VITE_ADMIN_DATA_SOURCE,
   adminMockScenario: parsed.VITE_ADMIN_MOCK_SCENARIO,
+  supabaseUrl: parsed.VITE_SUPABASE_URL,
+  supabaseAnonKey: parsed.VITE_SUPABASE_ANON_KEY,
 } as const;

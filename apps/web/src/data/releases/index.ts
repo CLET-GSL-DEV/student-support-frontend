@@ -3,6 +3,7 @@ import { resolveRepository } from '@/data/dataSource';
 import { ApiReleasesRepository } from './api';
 import { MockReleasesRepository } from './mock';
 import type { ReleasesRepository } from './repository';
+import { SupabaseReleasesRepository } from './supabase';
 
 export type { ReleasesRepository } from './repository';
 
@@ -10,4 +11,5 @@ export type { ReleasesRepository } from './repository';
 export const releasesRepository: ReleasesRepository = resolveRepository<ReleasesRepository>(
   new MockReleasesRepository(),
   new ApiReleasesRepository(),
+  new SupabaseReleasesRepository(),
 );

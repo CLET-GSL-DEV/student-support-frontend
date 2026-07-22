@@ -3,6 +3,7 @@ import { resolveRepository } from '@/data/dataSource';
 import { ApiWelfareRoutingRepository } from './api';
 import { MockWelfareRoutingRepository } from './mock';
 import type { WelfareRoutingRepository } from './repository';
+import { SupabaseWelfareRoutingRepository } from './supabase';
 
 export type { WelfareRoutingRepository } from './repository';
 
@@ -11,4 +12,5 @@ export const welfareRoutingRepository: WelfareRoutingRepository =
   resolveRepository<WelfareRoutingRepository>(
     new MockWelfareRoutingRepository(),
     new ApiWelfareRoutingRepository(),
+    new SupabaseWelfareRoutingRepository(),
   );
