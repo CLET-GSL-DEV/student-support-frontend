@@ -2,9 +2,12 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, dev]
   pull_request:
-    branches: [main]
+    branches: [main, dev]
+  # Manual escape hatch: build + push on demand (e.g. if a push event to dev
+  # is dropped). Trigger from the Actions UI or `gh workflow run`.
+  workflow_dispatch:
 
 # Cancel superseded runs on the same ref.
 concurrency:
@@ -77,3 +80,49 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Audit (fail on high/critical)
         run: pnpm audit --audit-level=high
+
+  docker:
+    name: Build and push image
+    needs: [verify, security-audit]
+    runs-on: ubuntu-latest
+    # Publish only from a real push to dev (not PRs), matching the platform
+    # convention. workflow_dispatch allows a manual rebuild.
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/dev') }}
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # argocd-image-updater tracks the :dev tag (digest-pinned on the ArgoCD app).
+      # Cluster Zitadel values are baked in at build time (Vite inlines VITE_*).
+      # This app owns its own /auth/callback, so its redirect URIs use the cluster
+      # host and are registered on Zitadel project 382921651425116297 / client
+      # 382921651592888457.
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          build-args: |
+            VITE_ZITADEL_AUTHORITY=https://auth.uat.rfdgh.com
+            VITE_ZITADEL_CLIENT_ID=382921651592888457
+            VITE_ZITADEL_PROJECT_ID=382921651425116297
+            VITE_ZITADEL_REDIRECT_URI=https://student-support.uat.rfdgh.com/auth/callback
+            VITE_ZITADEL_POST_LOGOUT_URI=https://student-support.uat.rfdgh.com/auth/logout/callback
+            VITE_SESSION_CHECK_ENABLED=true
+            VITE_ADMIN_DATA_SOURCE=mock
+            VITE_APP_ENV=production
+          tags: |
+            ghcr.io/clet-gsl-dev/student-support-frontend:dev
+            ghcr.io/clet-gsl-dev/student-support-frontend:dev-${{ github.sha }}
+            ghcr.io/clet-gsl-dev/student-support-frontend:latest
