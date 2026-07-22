@@ -115,8 +115,8 @@ jobs:
           push: true
           build-args: |
             VITE_ZITADEL_AUTHORITY=https://auth.uat.rfdgh.com
-            VITE_ZITADEL_CLIENT_ID=382921651592888457
-            VITE_ZITADEL_PROJECT_ID=382921651425116297
+            VITE_ZITADEL_CLIENT_ID=382952860368765065
+            VITE_ZITADEL_PROJECT_ID=382952860100329609
             VITE_ZITADEL_REDIRECT_URI=https://student-support.uat.rfdgh.com/auth/callback
             VITE_ZITADEL_POST_LOGOUT_URI=https://student-support.uat.rfdgh.com/auth/logout/callback
             VITE_SESSION_CHECK_ENABLED=true

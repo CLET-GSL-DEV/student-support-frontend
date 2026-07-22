@@ -30,7 +30,8 @@ COPY --from=pruner /app/out/full/ .
 # API base URLs default to same-origin /api/* (nginx proxies them to the gateway).
 # Zitadel points at the CLUSTER instance (auth.uat.rfdgh.com); this app owns its
 # OWN /auth/callback, so the redirect URIs use its cluster host and must be
-# registered on the Zitadel app (project 382921651425116297 / client 382921651592888457).
+# registered on the Zitadel app in the clet-internal org (project 382952860100329609
+# / client 382952860368765065).
 ARG VITE_API_URL=/api/app
 ARG VITE_IAM_URL=/api/iam
 ARG VITE_ZITADEL_AUTHORITY=https://auth.uat.rfdgh.com
