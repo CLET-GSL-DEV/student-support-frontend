@@ -26,11 +26,11 @@
     "@starter/eslint-config": "workspace:*",
     "@starter/tsconfig": "workspace:*",
     "@rfdtech/components": "^2.0.1",
-    "@tanstack/react-query": "^5.101.2",
+    "@tanstack/react-query": "^5.101.4",
     "@types/react": "^19.2.17",
     "@vitest/coverage-v8": "^4.1.9",
     "eslint": "^10.5.0",
-    "react": "^19.2.7",
+    "react": "^19.2.8",
     "typescript": "~6.0.2",
     "vitest": "^4.1.9"
   }
