@@ -85,18 +85,43 @@ jobs:
     name: Build and push image
     needs: [verify, security-audit]
     if: github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/staging')
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-    # Build, tag, push, scan and SBOM live in the org workflow (task 02/13), so how the
-    # estate builds images is one commit there rather than ~45 near-identical ones.
-    # Tags follow the branch: dev -> :dev, staging -> :staging, always plus the
-    # immutable :<branch>-<sha>.
-    uses: CLET-GSL-DEV/.github/.github/workflows/build-and-push.yml@main
-    with:
-      image_name: student-support-frontend
-      # This repo already published :latest; kept so nothing that pulls it breaks.
-      push_latest: true
-      # Verbatim from this repo's own build-args. The caller resolves its own
-      # vars, so the values stay visible here rather than depending on how
-      # contexts resolve across a workflow call.
+    # Deliberately NOT the org reusable workflow.
+    #
+    # This repository is PUBLIC; CLET-GSL-DEV/.github, which holds
+    # build-and-push.yml, is private. A public repository cannot call a reusable
+    # workflow from a private one — GitHub rejects the run before it creates a
+    # single job, reporting only "this run likely failed because of a workflow file
+    # issue" with no annotation. The file is valid; actionlint passes it. That is
+    # what made this repo's CI red from the moment it adopted the shared workflow.
+    #
+    # Keep these steps in step with build-and-push.yml, or make this repo private
+    # and switch back to the one-line call like every other frontend.
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # No build args: every value the SPA needs is read from window.__CONFIG__ at
+      # container start, so this image is the same artifact in every environment.
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/clet-gsl-dev/student-support-frontend:${{ github.ref_name }}
+            ghcr.io/clet-gsl-dev/student-support-frontend:${{ github.ref_name }}-${{ github.sha }}
+            ghcr.io/clet-gsl-dev/student-support-frontend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
