@@ -100,12 +100,3 @@ jobs:
       # Verbatim from this repo's own build-args. The caller resolves its own
       # vars, so the values stay visible here rather than depending on how
       # contexts resolve across a workflow call.
-      build_args: |
-        VITE_ZITADEL_AUTHORITY=https://auth.uat.rfdgh.com
-        VITE_ZITADEL_CLIENT_ID=382066994809143319
-        VITE_ZITADEL_PROJECT_ID=382065717291253783
-        VITE_ZITADEL_REDIRECT_URI=https://student-support.uat.rfdgh.com/auth/callback
-        VITE_ZITADEL_POST_LOGOUT_URI=https://student-support.uat.rfdgh.com/auth/logout/callback
-        VITE_SESSION_CHECK_ENABLED=true
-        VITE_ADMIN_DATA_SOURCE=mock
-        VITE_APP_ENV=production
