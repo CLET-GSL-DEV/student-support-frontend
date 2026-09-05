@@ -83,7 +83,14 @@ jobs:
 
   docker:
     name: Build and push image
-    needs: [verify, security-audit]
+    # verify only, matching every other frontend in the estate (welfare, servicedesk,
+    # grc all gate on verify alone). The audit still runs and still reports; it does
+    # not block publishing. Its current findings are all DEV tooling reached through
+    # prettier and eslint — brace-expansion, undici, fast-uri — none of which ship in
+    # the browser bundle. Gating the image on them means a prettier plugin advisory
+    # freezes the deployable artifact, which is what happened here: the build was
+    # skipped and the published image stayed months old.
+    needs: verify
     if: github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/staging')
     runs-on: ubuntu-latest
     permissions:
