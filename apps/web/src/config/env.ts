@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { createEnv } from '@starter/api-client';
+import { runtimeEnv } from './runtimeConfig';
 
 // Each backend service gets its own full base URL (service path included,
 // version segment excluded — config/api.ts appends `/v1`). A value may be:
@@ -84,7 +85,9 @@ const envSchema = z.object({
   VITE_SUPABASE_ANON_KEY: z.string().default(''),
 });
 
-const parsed = createEnv(envSchema, import.meta.env);
+// The container's config.js merged over the Vite env, so the schema validates what the
+// container was actually given. With no container (dev) the merge is the Vite env.
+const parsed = createEnv(envSchema, runtimeEnv(import.meta.env));
 
 export const env = {
   apiUrl: parsed.VITE_API_URL,
