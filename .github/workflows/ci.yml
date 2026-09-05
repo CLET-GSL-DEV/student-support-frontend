@@ -52,8 +52,20 @@ jobs:
       - name: Build
         run: pnpm build
 
+      # continue-on-error until the SonarCloud project exists.
+      #
+      # The scanner reports: "The project CLET-GSL-DEV_student-support-frontend doesn't
+      # exist and can't be created" — the token cannot auto-provision it, so no
+      # configuration in this repo can make the scan pass. Someone with SonarCloud admin
+      # has to create the project once; then delete these two continue-on-error lines.
+      #
+      # It is set here rather than deleting the steps so the failure stays VISIBLE in the
+      # run, instead of the analysis quietly disappearing. What it must not do is decide
+      # whether an image gets built: this repo published nothing between 22 July and today
+      # because unrelated gates kept failing ahead of the build.
       - name: SonarQube Scan
         if: ${{ env.SONAR_TOKEN != '' }}
+        continue-on-error: true
         uses: SonarSource/sonarqube-scan-action@v8
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -61,6 +73,7 @@ jobs:
 
       - name: SonarQube Quality Gate
         if: ${{ env.SONAR_TOKEN != '' }}
+        continue-on-error: true
         uses: SonarSource/sonarqube-quality-gate-action@v1
         timeout-minutes: 5
         env:
