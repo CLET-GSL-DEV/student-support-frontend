@@ -150,5 +150,19 @@ jobs:
             ghcr.io/clet-gsl-dev/student-support-frontend:${{ github.ref_name }}
             ghcr.io/clet-gsl-dev/student-support-frontend:${{ github.ref_name }}-${{ github.sha }}
             ghcr.io/clet-gsl-dev/student-support-frontend:latest
+          # Restored with the Dockerfile. Vite inlines these at build time, so an image
+          # built without them ships an empty client id and nobody can sign in — a
+          # failure that looks completely healthy to every probe. They go away again
+          # with the runtime-config migration, once this repo is private and can pull
+          # the org base image.
+          build-args: |
+            VITE_ZITADEL_AUTHORITY=https://auth.uat.rfdgh.com
+            VITE_ZITADEL_CLIENT_ID=382066994809143319
+            VITE_ZITADEL_PROJECT_ID=382065717291253783
+            VITE_ZITADEL_REDIRECT_URI=https://student-support.uat.rfdgh.com/auth/callback
+            VITE_ZITADEL_POST_LOGOUT_URI=https://student-support.uat.rfdgh.com/auth/logout/callback
+            VITE_SESSION_CHECK_ENABLED=true
+            VITE_ADMIN_DATA_SOURCE=mock
+            VITE_APP_ENV=production
           cache-from: type=gha
           cache-to: type=gha,mode=max
