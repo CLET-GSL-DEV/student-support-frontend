@@ -12,6 +12,14 @@ import { createAppConfig } from '@starter/vite-config';
  *    separate origin from the OIDC/API instance — that origin too. Falls
  *    back to an empty string when both are unset, keeping the CSP valid in
  *    any build mode (e.g. CI).
+ *
+ *    A PRODUCTION build is the exception: it emits the literal placeholder
+ *    instead, and `docker/docker-entrypoint.sh` fills in the RUNTIME
+ *    authority at container start. The image carries no environment value,
+ *    so a baked origin here would block the authority the container is
+ *    actually given — and the symptom is "login does nothing", with no
+ *    network error and nothing in the build to look at. See
+ *    clet-kubernetes-platform docs/concepts/frontend-runtime-config.md.
  *  - `__API_CSP_ORIGINS__` -> the bare origins of `VITE_API_URL`,
  *    `VITE_IAM_URL`, `VITE_EMAIL_FUNCTION_URL` and `VITE_SUPABASE_URL` when
  *    they're absolute URLs (deduped — services may share a host), so
@@ -67,8 +75,12 @@ export default createAppConfig({
       .filter(Boolean)
       .join(' ');
     const apiOrigins = apiConnectOrigins(env);
+    // Production leaves the placeholder for the container entrypoint; every other
+    // mode substitutes the build-time authority so `vite dev` and `vite preview`
+    // are unchanged.
+    const cspZitadelOrigin = mode === 'production' ? '__ZITADEL_ORIGIN__' : zitadelOrigin;
     return {
-      plugins: [zitadelCsp(zitadelOrigin, apiOrigins, mode)],
+      plugins: [zitadelCsp(cspZitadelOrigin, apiOrigins, mode)],
     };
   },
 });

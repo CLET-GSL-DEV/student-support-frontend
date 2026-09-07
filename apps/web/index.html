@@ -12,13 +12,21 @@
       directly when the URLs are absolute (no Vite dev-server proxy).
       Relative values are same-origin and contribute nothing.
 
-      __ZITADEL_ORIGIN__ is replaced with VITE_ZITADEL_AUTHORITY (plus
-      VITE_ZITADEL_LOGIN_UI_ORIGIN, if the deployment serves ZITADEL's
-      interactive login UI on a separate origin) by a Vite plugin (see
-      vite.config.ts). These origins must be allowed in connect-src (OIDC
-      discovery / token / refresh) and frame-src (the monitorSession
+      __ZITADEL_ORIGIN__ is the IdP origin, which must be allowed in connect-src
+      (OIDC discovery / token / refresh) and frame-src (the monitorSession
       check-session iframe, and the login-UI redirect during silent renew).
-      Falls back to empty when both envs are unset.
+
+      It is filled in exactly ONE of two ways, never both:
+        - `vite dev` and a non-production build substitute VITE_ZITADEL_AUTHORITY
+          (plus VITE_ZITADEL_LOGIN_UI_ORIGIN, where the interactive login UI is on
+          a separate origin) at build time — see vite.config.ts;
+        - a PRODUCTION build deliberately leaves the literal placeholder in
+          dist/index.html, and docker/docker-entrypoint.sh substitutes the runtime
+          ZITADEL_AUTHORITY at container start.
+
+      The second half is not optional. Bake the origin and a runtime authority is
+      blocked by a policy still naming the build-time one — and the symptom is
+      "login does nothing", with no network error and nothing in the build to look at.
 
       __DEV_CSP_EXTRA__ is replaced with 'unsafe-eval' in `vite dev` only (never in
       a production build) — some dependency's dev-mode code path needs it. See
@@ -33,6 +41,14 @@
   </head>
   <body>
     <div id="root"></div>
+    <!--
+      Runtime configuration. Written by docker/docker-entrypoint.sh at CONTAINER
+      START, never baked, and absent under `pnpm dev` (where import.meta.env is the
+      source instead). It is a CLASSIC script and the bundle below is a module, which
+      is deferred — so this always runs first and window.__CONFIG__ exists by the time
+      any app module does. See src/config/runtimeConfig.ts.
+    -->
+    <script src="/config.js"></script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
