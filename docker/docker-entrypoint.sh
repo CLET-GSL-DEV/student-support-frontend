@@ -25,7 +25,20 @@ ZITADEL_PROJECT_ID="${ZITADEL_PROJECT_ID:-}"
 # JWT audience per route, so a token addressed only to this app's own project is rejected
 # with a 401 on a route owned by another one. Per-environment ids, so not compilable in.
 ZITADEL_AUDIENCE_PROJECT_IDS="${ZITADEL_AUDIENCE_PROJECT_IDS:-}"
+# One of development | staging | production. The app's zod schema (src/config/env.ts)
+# accepts nothing else, and a rejected value throws while the bundle is loading: a blank
+# page that answers every probe 200. Checked HERE so a bad ConfigMap stops the container
+# instead. If that enum ever gains a value, widen this list with it.
 APP_ENV="${APP_ENV:-production}"
+case "$APP_ENV" in
+  development|staging|production) ;;
+  *)
+    echo "FATAL: APP_ENV='$APP_ENV' is not one of development, staging, production." >&2
+    echo "       The app would reject it while loading and render a blank page that" >&2
+    echo "       still answers every probe 200. See apps/web/src/config/env.ts." >&2
+    exit 1
+    ;;
+esac
 SENTRY_DSN="${SENTRY_DSN:-}"
 export API_UPSTREAM="${API_UPSTREAM:-http://apisix-gateway.infrastructure.svc.cluster.local}"
 
