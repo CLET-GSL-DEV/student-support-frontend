@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [main, dev]
+    branches: [main, dev, staging]
   pull_request:
-    branches: [main, dev]
+    branches: [main, dev, staging]
   # Manual escape hatch: build + push on demand (e.g. if a push event to dev
   # is dropped). Trigger from the Actions UI or `gh workflow run`.
   workflow_dispatch:
@@ -52,8 +52,20 @@ jobs:
       - name: Build
         run: pnpm build
 
+      # continue-on-error until the SonarCloud project exists.
+      #
+      # The scanner reports: "The project CLET-GSL-DEV_student-support-frontend doesn't
+      # exist and can't be created" — the token cannot auto-provision it, so no
+      # configuration in this repo can make the scan pass. Someone with SonarCloud admin
+      # has to create the project once; then delete these two continue-on-error lines.
+      #
+      # It is set here rather than deleting the steps so the failure stays VISIBLE in the
+      # run, instead of the analysis quietly disappearing. What it must not do is decide
+      # whether an image gets built: this repo published nothing between 22 July and today
+      # because unrelated gates kept failing ahead of the build.
       - name: SonarQube Scan
         if: ${{ env.SONAR_TOKEN != '' }}
+        continue-on-error: true
         uses: SonarSource/sonarqube-scan-action@v8
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -61,6 +73,7 @@ jobs:
 
       - name: SonarQube Quality Gate
         if: ${{ env.SONAR_TOKEN != '' }}
+        continue-on-error: true
         uses: SonarSource/sonarqube-quality-gate-action@v1
         timeout-minutes: 5
         env:
@@ -83,46 +96,102 @@ jobs:
 
   docker:
     name: Build and push image
-    needs: [verify, security-audit]
+    # verify only, matching every other frontend in the estate (welfare, servicedesk,
+    # grc all gate on verify alone). The audit still runs and still reports; it does
+    # not block publishing. Its current findings are all DEV tooling reached through
+    # prettier and eslint — brace-expansion, undici, fast-uri — none of which ship in
+    # the browser bundle. Gating the image on them means a prettier plugin advisory
+    # freezes the deployable artifact, which is what happened here: the build was
+    # skipped and the published image stayed months old.
+    needs: verify
+    # A pull_request into a publishing branch BUILDS but never publishes, so a broken
+    # image is caught on the PR instead of after merge — which is exactly how the
+    # reusable-workflow and base-image attempts got as far as `dev` before failing.
+    #
+    # ref_name IS the branch on push and workflow_dispatch, but "<n>/merge" on a
+    # pull_request — so the ref_name arms match a push/dispatch to a publishing branch,
+    # and the base_ref arms (empty outside a pull_request) match a PR into one. main is
+    # excluded on purpose: it carries no Dockerfile.
+    if: >-
+      github.ref_name == 'dev' || github.ref_name == 'staging' || github.base_ref == 'dev' ||
+      github.base_ref == 'staging'
     runs-on: ubuntu-latest
-    # Publish only from a real push to dev (not PRs), matching the platform
-    # convention. workflow_dispatch allows a manual rebuild.
-    if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/dev') }}
     permissions:
       contents: read
       packages: write
+    # Deliberately NOT the org reusable workflow.
+    #
+    # This repository is PUBLIC; CLET-GSL-DEV/.github, which holds
+    # build-and-push.yml, is private. A public repository cannot call a reusable
+    # workflow from a private one — GitHub rejects the run before it creates a
+    # single job, reporting only "this run likely failed because of a workflow file
+    # issue" with no annotation. The file is valid; actionlint passes it. That is
+    # what made this repo's CI red from the moment it adopted the shared workflow.
+    #
+    # Keep these steps in step with build-and-push.yml, or make this repo private
+    # and switch back to the one-line call like every other frontend.
     steps:
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
 
+      # buildx, before the build. The default docker driver cannot export a cache, so
+      # `cache-to: type=gha` fails the build outright with "Cache export is not supported
+      # for the docker driver". The org reusable workflow sets this up; this job has to
+      # do it itself.
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Tags are DERIVED from the branch, never written out per environment: a job with a
+      # literal `:dev` in it publishes a dev tag from a staging build, and nothing about
+      # the run looks wrong (api-integration shipped exactly that). The `case` is the
+      # invariant stated once, so adding a third publishing branch is a deliberate edit
+      # here rather than something that happens by accident.
+      - name: Resolve image tags from the branch
+        id: image
+        env:
+          IMAGE: ghcr.io/clet-gsl-dev/student-support-frontend
+          EVENT_NAME: ${{ github.event_name }}
+          REF_NAME: ${{ github.ref_name }}
+          SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT_NAME" = pull_request ]; then
+            # Built, loaded nowhere, pushed nowhere. The tag only names the local image.
+            printf 'push=false\ntags=%s:pr\n' "$IMAGE" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          case "$REF_NAME" in
+            dev|staging) ;;
+            *)
+              echo "::error::refusing to publish an image from '$REF_NAME' — only dev and staging publish"
+              exit 1
+              ;;
+          esac
+          # The mutable branch tag the ArgoCD overlay pulls, plus the immutable
+          # branch-sha one, which is what you roll back to.
+          printf 'push=true\ntags=%s:%s,%s:%s-%s\n' "$IMAGE" "$REF_NAME" "$IMAGE" "$REF_NAME" "$SHA" >> "$GITHUB_OUTPUT"
+
       - name: Log in to GHCR
+        if: steps.image.outputs.push == 'true'
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # argocd-image-updater tracks the :dev tag (digest-pinned on the ArgoCD app).
-      # Cluster Zitadel values are baked in at build time (Vite inlines VITE_*).
-      # This app owns its own /auth/callback, so its redirect URIs use the cluster
-      # host and are registered on Zitadel project 382921651425116297 / client
-      # 382921651592888457.
+      # No build args and no --target. Every value the SPA needs is read from
+      # window.__CONFIG__, written by the container entrypoint at start, so this image is
+      # the same artifact in every environment.
+      #
+      # The Dockerfile's `runner` stage is the LAST one in the file, so docker builds it
+      # by default — adding `target: runner` here would be redundant, and adding a stage
+      # after it in the Dockerfile would silently change what this publishes.
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
           context: .
-          push: true
-          build-args: |
-            VITE_ZITADEL_AUTHORITY=https://auth.uat.rfdgh.com
-            VITE_ZITADEL_CLIENT_ID=382066994809143319
-            VITE_ZITADEL_PROJECT_ID=382065717291253783
-            VITE_ZITADEL_REDIRECT_URI=https://student-support.uat.rfdgh.com/auth/callback
-            VITE_ZITADEL_POST_LOGOUT_URI=https://student-support.uat.rfdgh.com/auth/logout/callback
-            VITE_SESSION_CHECK_ENABLED=true
-            VITE_ADMIN_DATA_SOURCE=mock
-            VITE_APP_ENV=production
-          tags: |
-            ghcr.io/clet-gsl-dev/student-support-frontend:dev
-            ghcr.io/clet-gsl-dev/student-support-frontend:dev-${{ github.sha }}
-            ghcr.io/clet-gsl-dev/student-support-frontend:latest
+          push: ${{ steps.image.outputs.push == 'true' }}
+          tags: ${{ steps.image.outputs.tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
