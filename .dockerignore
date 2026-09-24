@@ -1,0 +1,33 @@
+# The build installs from the lockfile inside the image, so host artefacts must never
+# be copied in: a host node_modules carries platform-specific binaries (esbuild,
+# rolldown) that break on alpine, and it is the single biggest thing in the context.
+node_modules
+**/node_modules
+dist
+**/dist
+build
+**/build
+.turbo
+**/.turbo
+coverage
+**/coverage
+playwright-report
+**/playwright-report
+test-results
+**/test-results
+
+.git
+.github
+.husky
+.vscode
+.idea
+
+# Local env files must not leak into the image — the deployed values arrive as
+# build-args from CI, and a stray .env would silently win over them in Vite.
+.env
+.env.*
+!.env.example
+
+*.log
+.DS_Store
+Thumbs.db

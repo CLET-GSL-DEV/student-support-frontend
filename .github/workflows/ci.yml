@@ -1,12 +1,11 @@
 name: CI
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
+  push:
+    branches: [main]
 
-# Cancel superseded runs on the same ref.
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
@@ -15,58 +14,21 @@ permissions:
   contents: read
 
 jobs:
-  verify:
-    name: Lint · Typecheck · Test · Build
-    runs-on: ubuntu-latest
-    env:
-      # Hoisted so the `if:` guards below can detect whether Sonar is configured.
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          # SonarQube needs full history for accurate new-code detection.
-          fetch-depth: 0
-
-      - uses: pnpm/action-setup@v6
-
-      - uses: actions/setup-node@v7
-        with:
-          node-version-file: .nvmrc
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Lint
-        run: pnpm lint
-
-      - name: Typecheck
-        run: pnpm typecheck
-
-      - name: Test (with coverage)
-        run: pnpm test
-
-      - name: Build
-        run: pnpm build
-
-      - name: SonarQube Scan
-        # Sonar reports, it does not gate. With the step on the critical path, the
-        # organization hitting its SonarCloud line limit turned every build in this
-        # repo red — including changes that never touched Sonar.
-        continue-on-error: true
-        if: ${{ env.SONAR_TOKEN != '' }}
-        uses: SonarSource/sonarqube-scan-action@v8
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-
-      - name: SonarQube Quality Gate
-        # Sonar reports, it does not gate. With the step on the critical path, the
-        # organization hitting its SonarCloud line limit turned every build in this
-        # repo red — including changes that never touched Sonar.
-        continue-on-error: true
-        if: ${{ env.SONAR_TOKEN != '' }}
-        uses: SonarSource/sonarqube-quality-gate-action@v1
-        timeout-minutes: 5
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  ci:
+    permissions:
+      contents: read
+      packages: write
+    uses: CLET-GSL-DEV/.github/.github/workflows/ci-node.yml@v1
+    with:
+      image_name: student-support-frontend
+      app_images: |
+        web=student-support-frontend
+      # Sonar reports, it does not gate (as before).
+      coverage_reports: |
+        packages/utils/coverage/lcov.info
+        packages/api-client/coverage/lcov.info
+        apps/web/coverage/lcov.info
+      sonar_project_key: CLET-GSL-DEV_student-support-frontend
+    secrets:
+      sonar_token: ${{ secrets.SONAR_TOKEN }}
+      sonar_host_url: ${{ secrets.SONAR_HOST_URL }}
