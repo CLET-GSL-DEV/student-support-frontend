@@ -1,0 +1,159 @@
+# The organisation's security scan, self-contained.
+#
+# This repository is PUBLIC, and a public repository cannot call the organisation's private reusable
+# workflow (CLET-GSL-DEV/.github security.yml fails with startup_failure before any job runs). So the
+# same steps are inlined here: CLET-GSL-DEV/.github v2.3.0 (9ad19d4) .github/workflows/security.yml,
+# .github/actions/security-scan and .github/actions/node-env, with the same action pins, scanner
+# versions, reports and gate (.github/scripts/security-gate.sh, vendored verbatim). Keep it in step with
+# the source by re-copying at a newer tag, not by editing the semantics here.
+#
+# The same file lives on main and dev: a pull request runs the workflow from the branch it targets, and
+# the schedule runs only on the default branch (main).
+#
+# Semgrep and Trivy over the source, pnpm audit over the lockfile; one gate judges every result. Findings
+# fail the run only when BLOCKING is "true"; a scan that did not run fails it either way.
+name: Security
+
+on:
+  pull_request:
+    branches: [main, dev]
+  push:
+    branches: [main, dev]
+  schedule:
+    # Mondays 03:17 UTC: new advisories arrive without a code change.
+    - cron: "17 3 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: security-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  security:
+    name: Security scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      # "true": critical/high findings fail the run. Scans that did not run fail it regardless.
+      BLOCKING: "false"
+      # Newline "<CVE-/GHSA-/PYSEC- id> <YYYY-MM-DD expiry> <reason>" entries, for an advisory with no fix
+      # or a version pinned on purpose. Not counted while active; counted again once expired; a
+      # malformed line fails the scan. Accepted ids are listed in the run summary.
+      ACCEPTED_VULNERABILITIES: ""
+      HUSKY: "0"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # --- Node environment (node-env): pnpm from packageManager, Node from .nvmrc, install from the lockfile
+      - name: Install pnpm
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        with:
+          package_json_file: package.json
+
+      - name: Set up Node (the repository's .nvmrc)
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: |
+          set -euo pipefail
+          pnpm install --frozen-lockfile
+
+      # --- SCA: the package manager's own audit
+      - name: SCA — dependency audit
+        run: |
+          mkdir -p "$RUNNER_TEMP/scan-results"
+          set +e
+          # No --audit-level: the report keeps every severity (pnpm filters its JSON by the level); the
+          # gate counts high and critical.
+          pnpm audit --json > "$RUNNER_TEMP/scan-results/pnpm-audit.json"
+          echo $? > "$RUNNER_TEMP/scan-results/pnpm-audit.status"
+
+      # --- security-scan: semgrep and Trivy over the source, then the gate
+      # A venv, so the runner's externally-managed Python does not refuse the install. --only-binary and
+      # the pin: semgrep 1.176.1 was first published as an sdist with no semgrep-core binary.
+      - name: Install semgrep
+        run: |
+          python3 -m venv "$RUNNER_TEMP/semgrep-venv"
+          "$RUNNER_TEMP/semgrep-venv/bin/pip" install --quiet --only-binary=:all: semgrep==1.176.1
+
+      - name: SAST — semgrep
+        run: |
+          mkdir -p "$RUNNER_TEMP/scan-results"
+          set +e
+          "$RUNNER_TEMP/semgrep-venv/bin/semgrep" scan \
+            --config p/owasp-top-ten --config p/security-audit --metrics=off \
+            --json-output="$RUNNER_TEMP/scan-results/semgrep.json" \
+            --sarif-output="$RUNNER_TEMP/scan-results/semgrep.sarif"
+          echo $? > "$RUNNER_TEMP/scan-results/semgrep.status"
+
+      # Full reports: every severity, unfixed included. The gate counts critical/high with a fix.
+      - name: Filesystem scan — Trivy (JSON)
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          scan-type: "fs"
+          scan-ref: "."
+          scanners: vuln,secret,misconfig
+          format: json
+          output: ${{ runner.temp }}/scan-results/trivy.json
+          exit-code: "0"
+
+      - name: Filesystem scan — Trivy (SARIF)
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          scan-type: "fs"
+          scan-ref: "."
+          scanners: vuln,secret,misconfig
+          format: sarif
+          output: ${{ runner.temp }}/scan-results/trivy.sarif
+          exit-code: "0"
+
+      - name: Judge every recorded result
+        env:
+          RESULTS_DIR: ${{ runner.temp }}/scan-results
+          EXTRA_TOOLS: pnpm-audit
+          ACCEPTED: ${{ env.ACCEPTED_VULNERABILITIES }}
+        run: bash .github/scripts/security-gate.sh
+
+      # One artifact per report, named as in every other repository. overwrite: a re-run replaces it.
+      - name: Upload semgrep-report
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: semgrep-report
+          path: |
+            ${{ runner.temp }}/scan-results/semgrep.json
+            ${{ runner.temp }}/scan-results/semgrep.sarif
+          retention-days: 90
+          if-no-files-found: warn
+          overwrite: true
+
+      - name: Upload trivy-report
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: trivy-report
+          path: |
+            ${{ runner.temp }}/scan-results/trivy.json
+            ${{ runner.temp }}/scan-results/trivy.sarif
+          retention-days: 90
+          if-no-files-found: warn
+          overwrite: true
+
+      - name: Upload dependency-audit-report
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: dependency-audit-report
+          path: ${{ runner.temp }}/scan-results/pnpm-audit.json
+          retention-days: 90
+          if-no-files-found: ignore
+          overwrite: true
