@@ -2,14 +2,21 @@ import { z } from 'zod';
 
 import { createEnv } from '@starter/api-client';
 
+import { runtimeEnv } from './runtimeConfig';
+
 // Each backend service gets its own full base URL (service path included,
 // version segment excluded — config/api.ts appends `/v1`). A value may be:
 //  - a /-relative path (e.g. `/api/app`) -> same-origin; in dev the Vite
 //    proxy forwards `/api/*` to VITE_DEV_API_PROXY_TARGET, in production the
 //    app is served same-origin behind the gateway; or
-//  - an absolute URL (e.g. `https://gateway.uat.rfdgh.com/api/hrm`) to call
+//  - an absolute URL (e.g. `https://gateway.example.gov/api/hrm`) to call
 //    a gateway directly — it must send CORS headers for browser calls, and
 //    its origin is added to the CSP connect-src (see vite.config.ts).
+//
+// The example host above is deliberately generic. Source maps ship in the
+// image and carry sourcesContent, so a real deployment hostname written in a
+// comment here shows up in the estate's "nothing baked" grep of the built
+// image and makes a real finding indistinguishable from a false one.
 const serviceBaseUrl = (defaultPath: string) =>
   z
     .string()
@@ -84,7 +91,11 @@ const envSchema = z.object({
   VITE_SUPABASE_ANON_KEY: z.string().default(''),
 });
 
-const parsed = createEnv(envSchema, import.meta.env);
+// The container's config.js, merged over the Vite env, so the schema validates what
+// the container was actually GIVEN rather than what the bundle was built with. With
+// no container (pnpm dev, tests) the merge is the Vite env plus the origin-derived
+// redirect URIs. See ./runtimeConfig.
+const parsed = createEnv(envSchema, runtimeEnv(import.meta.env));
 
 export const env = {
   apiUrl: parsed.VITE_API_URL,
