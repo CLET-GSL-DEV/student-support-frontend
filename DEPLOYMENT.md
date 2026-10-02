@@ -76,7 +76,12 @@ Add, for your Vercel domain (and any preview domains you use):
 Keep `VITE_ZITADEL_REDIRECT_URI` / `VITE_ZITADEL_POST_LOGOUT_URI` in step 2 in sync with what you
 register here.
 
-## 4. CSP is baked at build time
+## 4. CSP is baked at build time (static hosts)
+
+This applies to a static host build where `VITE_ZITADEL_AUTHORITY` is set. The container image does
+the opposite: a production build with no `VITE_ZITADEL_AUTHORITY` leaves the literal
+`__ZITADEL_ORIGIN__` placeholder in the CSP and the base image's entrypoint fills it at start (see
+"Building the image" below).
 
 The `connect-src` / `frame-src` origins in the CSP `<meta>` tag are substituted during `vite build`
 from `VITE_ZITADEL_AUTHORITY`, `VITE_API_URL`, `VITE_IAM_URL`, and `VITE_SUPABASE_URL` (see
@@ -97,3 +102,19 @@ The `apps/web/public/_headers` file is for Netlify/Cloudflare only — Vercel ig
 pnpm --filter @starter/web build   # tsc --noEmit && vite build -> apps/web/dist
 pnpm --filter @starter/web preview # serve the built output
 ```
+
+## Building the image (container deploys)
+
+The `Dockerfile` builds on `ghcr.io/clet-gsl-dev/clet-frontend-base` and takes **no `VITE_*` build
+args**: the domain, ZITADEL authority, client id and project id are read at container start from
+`/config.js` (`window.__CONFIG__`). Run it with `PLATFORM_DOMAIN`, `ZITADEL_CLIENT_ID` and
+`ZITADEL_PROJECT_ID` set, and leave `API_BASE_URL` empty so the app calls `/api/...` on its own host
+(the base proxies it to the gateway). It listens on **8080**. The OIDC redirect URIs are derived from
+the origin the browser loaded, so register `https://<host>/auth/callback` and
+`https://<host>/auth/logout/callback` on the ZITADEL application.
+
+The base package is **private** and this repository is **public**: a build here (including a CI job)
+can only pull it if the package's *Manage Actions access* lists this repository with Read, and a
+public repository's `GITHUB_TOKEN` has been refused (`denied`) even with that grant. Build from a
+context that is logged in to ghcr.io with an account that can read the package, or make the
+repository private, before adding an image job to CI.
